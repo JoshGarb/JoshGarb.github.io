@@ -1,0 +1,1363 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<meta name="description" content="Josh Garbutt, World Model Head Hunter. Research talent across robotic manipulation, locomotion, diffusion policies, VLA models, humanoids and embodied systems.">
+<title>The World Model Recruiter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,600&family=Public+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap">
+<style>
+/* Committed single dark theme. Every colour is painted explicitly so the page
+   holds regardless of the host's light/dark setting. */
+:root{
+  --paper:#12110e; --raise:#1a1815; --sunk:#0d0c0a;
+  --ink:#f2f0ea; --ink-2:#a8a196; --ink-3:#787166;
+  --rule:#2c2a25;
+  --acc:#6fc794; --acc-ink:#12110e; --acc-wash:rgba(111,199,148,.12); --acc-line:rgba(111,199,148,.34);
+  --pred:#e0a852; --pred-line:rgba(224,168,82,.5); --pred-wash:rgba(224,168,82,.11);
+  --shadow:0 1px 2px rgba(0,0,0,.35), 0 10px 30px -16px rgba(0,0,0,.65);
+  --disp:"Fraunces",Georgia,"Times New Roman",serif;
+  --body:"Public Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+  --mono:"DM Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --col:min(720px,100%);
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth; -webkit-text-size-adjust:100%; color-scheme:dark}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:var(--body); font-size:17px; line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--acc); color:var(--acc-ink)}
+:focus-visible{outline:2px solid var(--acc); outline-offset:3px; border-radius:4px}
+
+.shell{max-width:var(--col); margin:0 auto; padding:0 24px}
+.shell-wide{--col:min(1040px,100%)}
+
+/* ---------- top bar ---------- */
+.bar{
+  position:sticky; top:0; z-index:50; background:var(--paper);
+  border-bottom:1px solid transparent; transition:border-color .25s;
+}
+.bar.edge{border-bottom-color:var(--rule)}
+.bar-in{
+  max-width:var(--col); margin:0 auto; padding:13px 24px;
+  display:flex; align-items:center; gap:18px;
+}
+.bar nav{margin-left:auto; display:flex; align-items:center; gap:2px}
+.bar nav a{
+  font-family:var(--mono); font-size:12.5px; color:var(--ink-2); text-decoration:none;
+  padding:6px 10px; border-radius:6px; transition:color .18s, background .18s;
+}
+.bar nav a:hover{color:var(--ink); background:var(--sunk)}
+
+/* ---------- hero ---------- */
+.hero{padding:34px 0 260px}
+.hero-grid{
+  display:grid; grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);
+  gap:52px; align-items:start;
+}
+.hero-copy{min-width:0}
+.hero-art{min-width:0; align-self:stretch; padding-top:282px; min-height:1090px}
+.art-pin{position:sticky; top:78px}
+.art-grow{transform-origin:50% 50%; will-change:transform}
+.hero-grid{min-height:0}
+.scene{position:relative; aspect-ratio:1; width:100%}
+.scene canvas{width:100%; height:100%; display:block}
+.scene{overflow:hidden}
+.qr-crisp{
+  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+  width:1px; height:1px; max-width:100%; max-height:100%;
+  opacity:0; pointer-events:none; background:#fff; border-radius:3px;
+  image-rendering:pixelated;
+}
+.qr-links{
+  position:fixed; z-index:40; display:flex; gap:7px; flex-wrap:wrap; justify-content:center;
+  transform:translateX(-50%); opacity:0; visibility:hidden; pointer-events:none;
+  max-width:min(92vw,560px);
+}
+.qr-links a, .qr-links .pending{
+  font-family:var(--mono); font-size:12px; letter-spacing:.03em; white-space:nowrap;
+  padding:8px 13px; border-radius:8px; text-decoration:none;
+  border:1px solid var(--rule); background:var(--raise); color:var(--ink);
+  transition:border-color .18s, color .18s;
+}
+.qr-links a:hover{border-color:var(--acc); color:var(--acc)}
+.qr-links .pending{color:var(--ink-3); border-style:dashed}
+.qr-links .pending em{font-style:normal; color:var(--pred); font-size:10.5px}
+
+.scene-cap{
+  position:fixed; z-index:35; margin:0;
+  transform:translate(-100%,-50%);
+  text-align:right; white-space:nowrap; pointer-events:none;
+  font-family:var(--mono); font-size:11px; letter-spacing:.09em;
+  text-transform:uppercase; color:var(--ink-3);
+}
+.name{
+  font-family:var(--disp); font-variation-settings:"WONK" 1,"SOFT" 6;
+  font-weight:700; font-size:clamp(38px,5.6vw,54px); line-height:1;
+  letter-spacing:-.03em; margin:0 0 6px; text-wrap:balance;
+}
+.role{
+  font-family:var(--mono); font-size:12px; letter-spacing:.03em; color:var(--ink-3);
+  margin:0 0 34px; white-space:nowrap;
+}
+.role a{color:var(--ink-2); text-decoration:none; border-bottom:1px solid var(--rule)}
+.role a:hover{color:var(--acc); border-bottom-color:var(--acc-line)}
+.thesis{
+  font-family:var(--disp); font-variation-settings:"WONK" 1,"SOFT" 4;
+  font-weight:600; font-size:clamp(22px,3.1vw,29px); line-height:1.22;
+  letter-spacing:-.022em; margin:2px 0 24px; text-wrap:balance; max-width:22ch;
+}
+.thesis em{font-style:italic; color:var(--acc)}
+.hero .lede{color:var(--ink-2); max-width:52ch; margin:0 0 15px; font-size:16px}
+.hero .lede b{color:var(--ink); font-weight:600}
+.tie{
+  color:var(--ink); text-decoration:none; font-weight:500;
+  border-bottom:1.5px solid var(--acc-line); transition:.18s;
+}
+.tie:hover{color:var(--acc); border-bottom-color:var(--acc)}
+
+
+/* ---------- verticals ---------- */
+.verts{
+  list-style:none; margin:14px 0 0; padding:0;
+  display:flex; flex-wrap:wrap; gap:7px; max-width:60ch;
+}
+.verts li{
+  font-family:var(--mono); font-size:12.5px; letter-spacing:.02em;
+  padding:5px 10px; border-radius:6px;
+  background:var(--sunk); color:var(--ink-2); border:1px solid var(--rule);
+}
+
+/* ---------- link row ---------- */
+.links{display:flex; flex-wrap:wrap; gap:8px; margin-top:34px}
+.lk{
+  display:inline-flex; align-items:center; gap:8px; text-decoration:none;
+  font-size:14.5px; font-weight:500; padding:9px 14px; border-radius:8px;
+  border:1px solid var(--rule); background:var(--raise); color:var(--ink);
+  transition:border-color .18s, transform .18s, box-shadow .18s;
+}
+.lk:hover{border-color:var(--acc-line); transform:translateY(-1px); box-shadow:var(--shadow)}
+.lk svg{width:15px; height:15px; flex:none}
+.lk.solid{background:var(--acc); border-color:var(--acc); color:var(--acc-ink)}
+.lk.solid:hover{border-color:var(--acc)}
+.lk .out{color:var(--ink-3); font-family:var(--mono); font-size:12px}
+.lk.solid .out{color:var(--acc-ink); opacity:.75}
+.lk.flat{cursor:default}
+.lk.flat:hover{transform:none; border-color:var(--rule); box-shadow:none}
+
+/* ---------- sections ---------- */
+section{padding:64px 0; border-top:1px solid var(--rule)}
+.eyebrow{
+  font-family:var(--mono); font-size:11.5px; letter-spacing:.13em; text-transform:uppercase;
+  color:var(--ink-3); margin:0 0 8px;
+}
+h2{
+  font-family:var(--disp); font-variation-settings:"WONK" 1,"SOFT" 5; font-weight:700;
+  font-size:clamp(25px,3.6vw,32px); letter-spacing:-.025em; margin:0 0 8px; text-wrap:balance;
+}
+.dek{color:var(--ink-2); margin:0 0 26px; max-width:58ch; font-size:16px}
+
+/* reference cards */
+.refs{display:grid; grid-template-columns:repeat(auto-fit,minmax(215px,1fr)); gap:12px}
+.ref{
+  margin:0; padding:20px 20px 18px; border:1px solid var(--rule); border-radius:10px;
+  background:var(--raise); display:flex; flex-direction:column; gap:12px;
+  min-height:186px; opacity:1; transition:opacity .45s ease;
+}
+.ref.swap{opacity:0}
+.ref blockquote{
+  margin:0; flex:1; font-family:var(--disp); font-variation-settings:"WONK" 1,"SOFT" 4;
+  font-weight:400; font-size:16.5px; line-height:1.42; letter-spacing:-.01em; color:var(--ink);
+}
+.ref figcaption{
+  font-family:var(--mono); font-size:11px; letter-spacing:.06em; text-transform:uppercase;
+  color:var(--ink-3); border-top:1px solid var(--rule); padding-top:11px;
+}
+.holder code{font-family:var(--mono); font-size:12.5px; color:var(--pred)}
+
+/* mandates */
+.holder{
+  border:1px dashed var(--pred-line); background:var(--pred-wash);
+  border-radius:10px; padding:16px 18px; margin-bottom:16px;
+  font-size:14.5px; color:var(--ink-2);
+}
+.holder b{color:var(--pred); font-family:var(--mono); font-size:11.5px; letter-spacing:.1em; text-transform:uppercase; display:block; margin-bottom:4px}
+
+.jobs-head{display:flex; align-items:baseline; gap:14px; flex-wrap:wrap}
+.jobs-head h2{margin-bottom:0}
+.showall{
+  margin-left:auto; font-family:var(--mono); font-size:11.5px; letter-spacing:.05em;
+  background:transparent; border:1px solid var(--rule); color:var(--ink-2);
+  padding:6px 11px; border-radius:7px; cursor:pointer; transition:.18s; white-space:nowrap;
+}
+.showall:hover{color:var(--ink); border-color:var(--ink-3)}
+.showall[aria-pressed="true"]{color:var(--acc); border-color:var(--acc-line); background:var(--acc-wash)}
+
+/* slider */
+.slider[hidden], .joblist[hidden], .apply[hidden], .sent[hidden], .apply form[hidden]{display:none}
+.jtrack{
+  display:grid; grid-auto-flow:column; grid-auto-columns:46%; gap:12px;
+  overflow-x:auto; overscroll-behavior-x:contain; scroll-snap-type:x mandatory;
+  scrollbar-width:none; padding:2px; margin:0 -2px;
+}
+.jtrack::-webkit-scrollbar{display:none}
+.jcard{
+  scroll-snap-align:start; margin:0; min-width:0; min-height:272px;
+  border:1px solid var(--rule); border-radius:11px; background:var(--raise);
+  padding:18px 19px 16px; display:flex; flex-direction:column; gap:8px;
+  transition:border-color .2s;
+}
+.jcard:hover{border-color:var(--acc-line)}
+.jc-top{display:flex; align-items:center; gap:9px}
+.jc-role{font-weight:600; font-size:14.5px; margin:0; line-height:1.3}
+.jc-dom{font-family:var(--mono); font-size:12.5px; color:var(--ink-3); margin:0}
+.jc-locs{display:flex; flex-wrap:wrap; gap:5px}
+.jc-sum{
+  margin:4px 0 2px; flex:1; min-height:96px;
+  font-family:var(--mono); font-size:11px; line-height:1.6; color:var(--pred);
+  border:1px dashed var(--pred-line); background:var(--pred-wash);
+  border-radius:7px; padding:10px 11px;
+}
+.slide-foot{display:flex; align-items:center; gap:8px; margin-top:14px}
+.nav{
+  width:32px; height:32px; display:grid; place-items:center; padding:0;
+  border:1px solid var(--rule); background:var(--raise); color:var(--ink-2);
+  border-radius:8px; cursor:pointer; font:inherit; font-size:16px; line-height:1; transition:.18s;
+}
+.nav:hover:not(:disabled){color:var(--acc); border-color:var(--acc-line)}
+.nav:disabled{opacity:.28; cursor:not-allowed}
+.counter{
+  margin-left:auto; font-family:var(--mono); font-size:11.5px; letter-spacing:.08em;
+  color:var(--ink-3); font-variant-numeric:tabular-nums;
+}
+
+/* list view */
+.joblist{display:grid; gap:9px}
+.lrow{
+  display:grid; grid-template-columns:9px 1fr auto auto; gap:14px; align-items:center;
+  padding:14px 17px; border:1px solid var(--rule); border-radius:9px;
+  background:var(--raise); transition:border-color .2s;
+}
+.lrow:hover{border-color:var(--acc-line)}
+.live-dot{width:7px; height:7px; border-radius:50%; background:var(--acc)}
+.md-t{font-weight:600; font-size:15px; display:block}
+.md-s{font-family:var(--mono); font-size:12.5px; color:var(--ink-3)}
+.md-w{display:flex; flex-wrap:wrap; gap:5px; justify-content:flex-end; max-width:250px}
+.loc{
+  font-family:var(--mono); font-size:11.5px; letter-spacing:.02em; white-space:nowrap;
+  padding:3px 8px; border-radius:5px;
+  background:var(--sunk); color:var(--ink-2); border:1px solid var(--rule);
+}
+.mini{
+  font-family:var(--mono); font-size:11px; letter-spacing:.04em; white-space:nowrap;
+  border:1px solid var(--acc-line); background:var(--acc-wash); color:var(--acc);
+  padding:7px 12px; border-radius:7px; cursor:pointer; transition:.18s;
+}
+.mini:hover{background:var(--acc); color:var(--acc-ink); border-color:var(--acc)}
+
+/* shared apply panel */
+.apply{
+  margin-top:14px; border:1px solid var(--acc-line); border-radius:11px;
+  background:var(--raise); padding:18px;
+}
+.apply .hint{
+  font-family:var(--mono); font-size:11.5px; letter-spacing:.03em;
+  color:var(--acc); margin:0 0 14px;
+}
+.fgrid{display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:12px}
+.fld{display:flex; flex-direction:column; gap:5px; min-width:0}
+.fld-wide{grid-column:1 / -1}
+.fld label{
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--ink-3);
+}
+.fld label .req{color:var(--acc)}
+.fld label .opt{text-transform:none; letter-spacing:.02em; color:var(--ink-3)}
+.fld input{
+  font:inherit; font-size:14.5px; padding:9px 11px; border-radius:7px; width:100%;
+  border:1px solid var(--rule); background:var(--paper); color:var(--ink);
+}
+.fld input::placeholder{color:var(--ink-3)}
+.fld input[type="file"]{font-family:var(--mono); font-size:12.5px; padding:8px 10px}
+.arow{display:flex; gap:9px; align-items:center; margin-top:16px; flex-wrap:wrap}
+.btn{
+  font:inherit; font-size:14px; font-weight:600; padding:9px 17px; border-radius:8px;
+  cursor:pointer; border:1px solid transparent; transition:.18s;
+}
+.btn-go{background:var(--acc); color:var(--acc-ink); border-color:var(--acc)}
+.btn-go:disabled{opacity:.4; cursor:not-allowed}
+.btn-hide{background:transparent; color:var(--ink-2); border-color:var(--rule)}
+.btn-hide:hover{color:var(--ink); border-color:var(--ink-3)}
+.need{font-family:var(--mono); font-size:11px; color:var(--ink-3)}
+.btn-go:not(:disabled) ~ .need{visibility:hidden}
+.sent{
+  font-family:var(--mono); font-size:12.5px; line-height:1.55; color:var(--pred);
+  border:1px dashed var(--pred-line); background:var(--pred-wash);
+  border-radius:8px; padding:13px 15px; margin:0;
+}
+
+/* experience */
+.track{display:grid}
+.stint{
+  display:grid; grid-template-columns:96px 1fr; gap:22px;
+  padding:17px 0; border-bottom:1px solid var(--rule);
+}
+.stint:last-child{border-bottom:0}
+.when{font-family:var(--mono); font-size:12px; color:var(--ink-3); padding-top:5px; letter-spacing:.04em}
+.co{
+  font-family:var(--disp); font-variation-settings:"WONK" 1; font-weight:600;
+  font-size:18.5px; letter-spacing:-.018em; margin:0 0 1px;
+}
+.pos{margin:0; color:var(--ink-2); font-size:15px}
+.spec{margin:5px 0 0; font-family:var(--mono); font-size:12px; color:var(--ink-3)}
+.badge{
+  font-family:var(--mono); font-size:10px; letter-spacing:.1em; text-transform:uppercase;
+  background:var(--acc); color:var(--acc-ink); padding:2px 6px; border-radius:4px;
+  margin-left:8px; vertical-align:2px;
+}
+
+/* contact */
+.close{
+  border:1px solid var(--rule); border-left:3px solid var(--acc);
+  border-radius:4px 10px 10px 4px; padding:30px 28px; background:var(--raise);
+}
+.close h2{margin-bottom:8px}
+.close p:not(.eyebrow){color:var(--ink-2); max-width:48ch; margin:0 0 22px}
+
+footer{
+  border-top:1px solid var(--rule); padding:34px 0 56px;
+  display:flex; flex-direction:column; align-items:center; gap:16px;
+  font-family:var(--mono); font-size:11.5px; color:var(--ink-3);
+}
+.to-top{
+  font-family:var(--mono); font-size:14.5px; font-weight:500;
+  letter-spacing:.1em; text-transform:uppercase; text-decoration:none;
+  color:var(--ink); background:var(--raise);
+  border:1px solid var(--rule); border-radius:10px;
+  padding:12px 26px; transition:color .18s, border-color .18s, background .18s;
+}
+.to-top:hover{color:var(--acc); border-color:var(--acc); background:var(--acc-wash)}
+.fname{letter-spacing:.05em; text-align:center}
+
+/* reveal, opt-in so no-JS still shows everything */
+html.js .rv{opacity:0; transform:translateY(14px); transition:opacity .55s ease, transform .55s cubic-bezier(.2,.8,.2,1)}
+html.js .rv.seen{opacity:1; transform:none}
+
+/* build notes */
+#nbtn{
+  position:fixed; right:16px; bottom:16px; z-index:99; cursor:pointer;
+  font-family:var(--mono); font-size:11.5px; letter-spacing:.05em;
+  background:var(--ink); color:var(--paper); border:0; padding:10px 14px;
+  border-radius:8px; box-shadow:var(--shadow); transition:transform .18s;
+}
+#nbtn:hover{transform:translateY(-2px)}
+#notes{
+  position:fixed; right:16px; bottom:60px; z-index:99;
+  width:min(360px,calc(100vw - 32px)); max-height:64vh; overflow:auto;
+  background:var(--raise); border:1px solid var(--rule); border-radius:10px;
+  padding:18px; box-shadow:var(--shadow); display:none; font-size:13.5px;
+}
+#notes.open{display:block}
+#notes h4{font-family:var(--disp); font-weight:700; font-size:15px; margin:0 0 3px}
+#notes .nsub{font-family:var(--mono); font-size:10.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-3); margin:0 0 13px}
+#notes ul{margin:0; padding-left:17px; color:var(--ink-2)}
+#notes li{margin-bottom:9px}
+#notes code{font-family:var(--mono); font-size:12px; background:var(--sunk); padding:1px 4px; border-radius:3px; color:var(--ink)}
+
+@media(max-width:640px){
+  body{font-size:16.5px}
+  .hero{padding:40px 0 34px}
+  .hero-grid{grid-template-columns:1fr; gap:30px}
+  .hero-art{max-width:320px; margin:8px auto 0; min-height:0; padding-top:0; align-self:auto}
+  .art-pin{position:static}
+  .role{white-space:normal}
+  .hero-grid{min-height:0}
+  .hero{padding:40px 0 34px}
+  .jtrack{grid-auto-columns:88%}
+  .contact-grid{grid-template-columns:1fr; gap:22px}
+  .qr{align-items:flex-start}
+  section{padding:36px 0}
+  .stint{grid-template-columns:1fr; gap:3px}
+  .when{padding-top:0}
+  .lrow{grid-template-columns:9px 1fr auto; row-gap:8px}
+  .md-w{grid-column:2; justify-content:flex-start; max-width:none; margin-top:2px}
+  .lrow .mini{grid-column:3; grid-row:1}
+  .bar nav a{display:none}
+  .bar nav a.stay{display:inline-flex}
+  .close{padding:24px 20px}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important; transition:none!important}}
+</style>
+
+</head>
+<body>
+<div class="bar" id="bar">
+  <div class="bar-in">
+    <nav>
+      <a href="#jobs">Live jobs</a>
+      <a href="#refs">References</a>
+      <a class="stay" href="#contact">Contact</a>
+    </nav>
+  </div>
+</div>
+
+<div class="shell shell-wide" id="top">
+  <header class="hero">
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <h1 class="name">Josh Garbutt</h1>
+        <p class="role">
+          World Model Head Hunter &nbsp;·&nbsp; <a href="https://www.linkedin.com/company/this-is-growth-consulting/posts/?feedView=all" target="_blank" rel="noopener">This is Growth</a>
+        </p>
+
+        <p class="thesis">Research talent for <em>world models</em> and embodied AI.</p>
+
+        <p class="lede">
+          I work with research scientists and research engineers across multiple
+          verticals within <b>world models</b>:
+        </p>
+        <ul class="verts">
+          <li>robotic manipulation</li>
+          <li>dexterous manipulation</li>
+          <li>locomotion</li>
+          <li>robotics</li>
+          <li>diffusion policies</li>
+          <li>vision-language-action models</li>
+          <li>world action models</li>
+          <li>RL / RLHF</li>
+          <li>video understanding</li>
+          <li>generative models</li>
+          <li>gaussian splatting</li>
+          <li>datasets</li>
+          <li>humanoids</li>
+          <li>embodied systems</li>
+          <li>simulations</li>
+          <li>agents</li>
+        </ul>
+      </div>
+
+      <div class="hero-art" id="artCol">
+        <div class="art-pin" id="artPin">
+          <div class="art-grow" id="artGrow">
+            <div class="scene" id="scene">
+              <canvas id="bonsai"></canvas>
+              <img class="qr-crisp" id="qrCrisp" src="data:image/png;base64,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" alt="WeChat QR code for Josh Garbutt">
+            </div>
+          </div>
+          <p class="scene-cap" id="sceneCap">scroll to look down &darr;</p>
+        </div>
+        <div class="qr-links" id="qrLinks">
+          <a href="https://www.linkedin.com/in/worldmodel/" target="_blank" rel="noopener">LinkedIn</a>
+          <a href="https://github.com/JoshGarb" target="_blank" rel="noopener">GitHub</a>
+          <a href="mailto:josh@thisisgrowth.io">Email</a>
+        </div>
+      </div>
+    </div>
+  </header>
+</div>
+
+<div class="shell">
+  <section id="jobs" class="rv">
+    <p class="eyebrow">Live jobs</p>
+    <div class="jobs-head">
+      <h2>Live jobs</h2>
+      <button class="showall" id="showall" type="button" aria-pressed="false" aria-controls="joblist">show all</button>
+    </div>
+    <p class="dek">
+      A live, dated list of what I'm working on right now.
+    </p>
+
+    <div class="slider" id="slider">
+      <div class="jtrack" id="jtrack" tabindex="0" role="group" aria-label="Live jobs, scroll horizontally">
+        <article class="jcard">
+          <div class="jc-top"><span class="live-dot"></span><p class="jc-role">Research Scientist / Research Engineer</p></div>
+          <p class="jc-dom">World models &middot; Video generation</p>
+          <div class="jc-locs"><span class="loc">London</span><span class="loc">Zurich</span><span class="loc">Palo Alto</span></div>
+          <p class="jc-sum">Summary to follow. A few lines on the team, what the work actually involves, the stage the company is at and roughly where comp lands. Enough to judge it at a glance without opening anything.</p>
+          <div><button class="mini" type="button" data-job="0">Interested</button></div>
+        </article>
+        <article class="jcard">
+          <div class="jc-top"><span class="live-dot"></span><p class="jc-role">Research Scientist / Research Engineer</p></div>
+          <p class="jc-dom">World models &middot; Simulations</p>
+          <div class="jc-locs"><span class="loc">London</span><span class="loc">Zurich</span><span class="loc">Palo Alto</span></div>
+          <p class="jc-sum">Summary to follow. A few lines on the team, what the work actually involves, the stage the company is at and roughly where comp lands. Enough to judge it at a glance without opening anything.</p>
+          <div><button class="mini" type="button" data-job="1">Interested</button></div>
+        </article>
+        <article class="jcard">
+          <div class="jc-top"><span class="live-dot"></span><p class="jc-role">Research Scientist / Research Engineer</p></div>
+          <p class="jc-dom">World models &middot; Controllable / interactive video</p>
+          <div class="jc-locs"><span class="loc">Los Angeles</span></div>
+          <p class="jc-sum">Summary to follow. A few lines on the team, what the work actually involves, the stage the company is at and roughly where comp lands. Enough to judge it at a glance without opening anything.</p>
+          <div><button class="mini" type="button" data-job="2">Interested</button></div>
+        </article>
+        <article class="jcard">
+          <div class="jc-top"><span class="live-dot"></span><p class="jc-role">Research Scientist / Research Engineer</p></div>
+          <p class="jc-dom">World models &middot; Robotics</p>
+          <div class="jc-locs"><span class="loc">London</span><span class="loc">Zurich</span><span class="loc">San Francisco</span><span class="loc">Palo Alto</span></div>
+          <p class="jc-sum">Summary to follow. A few lines on the team, what the work actually involves, the stage the company is at and roughly where comp lands. Enough to judge it at a glance without opening anything.</p>
+          <div><button class="mini" type="button" data-job="3">Interested</button></div>
+        </article>
+        <article class="jcard">
+          <div class="jc-top"><span class="live-dot"></span><p class="jc-role">Research Scientist / Research Engineer</p></div>
+          <p class="jc-dom">World models &middot; Diffusion policies</p>
+          <div class="jc-locs"><span class="loc">Zurich</span><span class="loc">San Francisco</span><span class="loc">Palo Alto</span></div>
+          <p class="jc-sum">Summary to follow. A few lines on the team, what the work actually involves, the stage the company is at and roughly where comp lands. Enough to judge it at a glance without opening anything.</p>
+          <div><button class="mini" type="button" data-job="4">Interested</button></div>
+        </article>
+        <article class="jcard">
+          <div class="jc-top"><span class="live-dot"></span><p class="jc-role">Research Scientist / Research Engineer</p></div>
+          <p class="jc-dom">World models &middot; Gaming</p>
+          <div class="jc-locs"><span class="loc">San Francisco</span></div>
+          <p class="jc-sum">Summary to follow. A few lines on the team, what the work actually involves, the stage the company is at and roughly where comp lands. Enough to judge it at a glance without opening anything.</p>
+          <div><button class="mini" type="button" data-job="5">Interested</button></div>
+        </article>
+      </div>
+      <div class="slide-foot">
+        <button class="nav" id="jprev" type="button" aria-label="Previous job">&lsaquo;</button>
+        <button class="nav" id="jnext" type="button" aria-label="Next job">&rsaquo;</button>
+        <span class="counter" id="jcount" aria-live="polite">01 / 06</span>
+      </div>
+    </div>
+
+    <div class="joblist" id="joblist" hidden>
+        <div class="lrow">
+          <span class="live-dot"></span>
+          <span><span class="md-t">Research Scientist / Research Engineer</span><span class="md-s">World models &middot; Video generation</span></span>
+          <span class="md-w"><span class="loc">London</span><span class="loc">Zurich</span><span class="loc">Palo Alto</span></span>
+          <button class="mini" type="button" data-job="0">Interested</button>
+        </div>
+        <div class="lrow">
+          <span class="live-dot"></span>
+          <span><span class="md-t">Research Scientist / Research Engineer</span><span class="md-s">World models &middot; Simulations</span></span>
+          <span class="md-w"><span class="loc">London</span><span class="loc">Zurich</span><span class="loc">Palo Alto</span></span>
+          <button class="mini" type="button" data-job="1">Interested</button>
+        </div>
+        <div class="lrow">
+          <span class="live-dot"></span>
+          <span><span class="md-t">Research Scientist / Research Engineer</span><span class="md-s">World models &middot; Controllable / interactive video</span></span>
+          <span class="md-w"><span class="loc">Los Angeles</span></span>
+          <button class="mini" type="button" data-job="2">Interested</button>
+        </div>
+        <div class="lrow">
+          <span class="live-dot"></span>
+          <span><span class="md-t">Research Scientist / Research Engineer</span><span class="md-s">World models &middot; Robotics</span></span>
+          <span class="md-w"><span class="loc">London</span><span class="loc">Zurich</span><span class="loc">San Francisco</span><span class="loc">Palo Alto</span></span>
+          <button class="mini" type="button" data-job="3">Interested</button>
+        </div>
+        <div class="lrow">
+          <span class="live-dot"></span>
+          <span><span class="md-t">Research Scientist / Research Engineer</span><span class="md-s">World models &middot; Diffusion policies</span></span>
+          <span class="md-w"><span class="loc">Zurich</span><span class="loc">San Francisco</span><span class="loc">Palo Alto</span></span>
+          <button class="mini" type="button" data-job="4">Interested</button>
+        </div>
+        <div class="lrow">
+          <span class="live-dot"></span>
+          <span><span class="md-t">Research Scientist / Research Engineer</span><span class="md-s">World models &middot; Gaming</span></span>
+          <span class="md-w"><span class="loc">San Francisco</span></span>
+          <button class="mini" type="button" data-job="5">Interested</button>
+        </div>
+    </div>
+
+    <div class="apply" id="applyPanel" hidden>
+      <form novalidate>
+        <p class="hint"></p>
+        <div class="fgrid">
+          <div class="fld">
+            <label for="ap-name">Name <span class="req">*</span></label>
+            <input id="ap-name" name="name" type="text" autocomplete="name" data-req>
+          </div>
+          <div class="fld">
+            <label for="ap-email">Email <span class="req">*</span></label>
+            <input id="ap-email" name="email" type="email" autocomplete="email" data-req>
+          </div>
+          <div class="fld">
+            <label for="ap-phone">Phone <span class="req">*</span></label>
+            <input id="ap-phone" name="phone" type="tel" autocomplete="tel" data-req>
+          </div>
+          <div class="fld">
+            <label for="ap-li">LinkedIn <span class="opt">(preferred)</span></label>
+            <input id="ap-li" name="linkedin" type="url" placeholder="linkedin.com/in/&hellip;">
+          </div>
+          <div class="fld fld-wide">
+            <label for="ap-cv">Resume <span class="req">*</span></label>
+            <input id="ap-cv" name="resume" type="file" accept=".pdf,.doc,.docx" data-req>
+          </div>
+        </div>
+        <div class="arow">
+          <button class="btn btn-go" type="submit" disabled>Submit</button>
+          <button class="btn btn-hide" type="button">Hide</button>
+          <span class="need">Name, email, phone and resume required</span>
+        </div>
+      </form>
+      <p class="sent" hidden></p>
+    </div>
+  </section>
+
+  <!-- "Where I've worked" parked for now at Josh's request, uncomment to bring it back.
+  <section id="track" class="rv">
+    <p class="eyebrow">Track</p>
+    <h2>Where I've worked</h2>
+    <div class="track">
+      <div class="stint">
+        <span class="when">Current</span>
+        <div>
+          <p class="co">This is Growth <span class="badge">now</span></p>
+          <p class="pos">World Model Head Hunter</p>
+          <p class="spec">World models &middot; robotics &middot; humanoids &middot; embodied systems</p>
+        </div>
+      </div>
+      <div class="stint">
+        <span class="when">Previous</span>
+        <div>
+          <p class="co">Cubiq Recruitment</p>
+          <p class="pos">Senior Recruitment Consultant</p>
+          <p class="spec">GenAI and quantum hardware</p>
+        </div>
+      </div>
+      <div class="stint">
+        <span class="when">Previous</span>
+        <div>
+          <p class="co">MRL Consulting Group</p>
+          <p class="pos">Recruitment</p>
+        </div>
+      </div>
+      <div class="stint">
+        <span class="when">Previous</span>
+        <div>
+          <p class="co">Edison Search</p>
+          <p class="pos">Senior Recruitment Consultant / Recruitment Consultant</p>
+        </div>
+      </div>
+      <div class="stint">
+        <span class="when">Previous</span>
+        <div>
+          <p class="co">Roc Search</p>
+          <p class="pos">Recruitment Consultant</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  -->
+
+  <section id="refs" class="rv">
+    <p class="eyebrow">References</p>
+    <h2>Candidates&rsquo; feedback</h2>
+    <div class="holder">
+      <b>Placeholder content</b>
+      Sample quotes are cycling here to show the mechanic. Real ones go in the <code>POOL</code>
+      array at the bottom of the file (or a CMS collection). The rotation handles any number
+      and always shows three at a time.
+    </div>
+    <div class="refs" id="refs-grid">
+      <figure class="ref"><blockquote></blockquote><figcaption></figcaption></figure>
+      <figure class="ref"><blockquote></blockquote><figcaption></figcaption></figure>
+      <figure class="ref"><blockquote></blockquote><figcaption></figcaption></figure>
+    </div>
+  </section>
+
+  <section id="contact" class="rv">
+    <p class="eyebrow">Contact</p>
+    <h2>Worth a conversation?</h2>
+    <p class="dek">
+      Worth a chat if you're hiring in world models, or if you're a researcher thinking
+      about your next move. Any of these reaches me, and I'd be glad to hear from you.
+    </p>
+    <div class="links" style="margin-top:0">
+        <a class="lk solid" href="https://www.linkedin.com/in/worldmodel/" target="_blank" rel="noopener">
+          LinkedIn <span class="out">/in/worldmodel</span>
+        </a>
+        <a class="lk" href="https://github.com/JoshGarb" target="_blank" rel="noopener">
+          GitHub <span class="out">JoshGarb</span>
+        </a>
+        <a class="lk" href="mailto:josh@thisisgrowth.io">
+          Email <span class="out">josh@thisisgrowth.io</span>
+        </a>
+        <a class="lk" href="https://wa.me/447301620466" target="_blank" rel="noopener">
+          WhatsApp <span class="out">+44 7301 620466</span>
+        </a>
+      </div>
+  </section>
+
+  <footer>
+    <a class="to-top" href="#top">Top &uarr;</a>
+    <span class="fname">Josh Garbutt &middot; The World Model Recruiter</span>
+  </footer>
+</div>
+
+<button id="nbtn" type="button">Build notes</button>
+<div id="notes">
+  <h4>Notes for the build</h4>
+  <p class="nsub">Prototype annotation. Delete before shipping</p>
+  <ul>
+    <li><strong>Verticals are Josh's own list</strong>, world models only. Deliberately not LLMs, agents, games, simulation or AV. The five roles under Track come from the current <code>/team/josh-garbutt</code> page.</li>
+    <li><strong>References rotate:</strong> three cards visible, swapping one at a time from a larger pool every 3s, so a handful of quotes reads as constant activity. Pauses under reduced-motion.</li>
+    <li><strong>Live jobs are real</strong>, Josh supplied them. They still need to be editable without a deploy, and each row wants a date so the list visibly moves.</li>
+    <li><strong>The apply form does not submit anywhere.</strong> Validation and the open/close behaviour are real; the submit handler only prints a notice. It needs wiring to an inbox or ATS, plus server-side validation, a file-size/type limit, and a privacy notice before it goes live.</li>
+    <li><strong>No photo on the current page</strong>, just a grey <code>JG</code> box. Either use a real one or drop the slot; a placeholder is worse than neither.</li>
+    <li><strong>Type</strong> is Fraunces + Public Sans + DM Mono. The character comes from the type, not from effects.</li>
+    <li><strong>Dark only, by choice.</strong> No toggle, no light palette, no <code>prefers-color-scheme</code> branch, every colour is painted explicitly on <code>:root</code> so the page looks the same whatever the viewer’s OS is set to. One accent: a green that nods to the Growth mark. Amber only marks placeholder content.</li>
+    <li><strong>The bonsai is a canvas voxel scene</strong>, no libraries. The paving is Josh&rsquo;s real WeChat QR, 37&times;37 modules, raised one block each. Scroll lifts the camera from isometric to top-down and swings the yaw square-on; the canopy fades so the code is readable.</li>
+    <li><strong>Scale, not geometry.</strong> The scene renders 25% larger at rest, tree and platform together, instead of the tree being re-proportioned. Tree geometry is back to the approved version.</li>
+    <li><strong>The WeChat code lives only in the tree now.</strong> The duplicate in Contact is gone; its embedded PNG moved onto the tree overlay, which had been reading its image from that element.</li>
+    <li><strong>Footer</strong> is a single centred &ldquo;Top&rdquo; control with a proper hit area, the duplicate LinkedIn/GitHub/Email links are gone, since the Contact section directly above already carries them.</li>
+    <li><strong>&ldquo;Scroll to look down&rdquo;</strong> sits in the clear space to the left of the tree rather than under it, since the enlarged scene covers that area. It fades out as soon as you start scrolling.</li>
+    <li><strong>Butterflies</strong> are two-frame pixel sprites drawn in screen space, so the silhouette reads at small size rather than turning into a coloured smudge. Orange, blue and white; wings open and shut as they orbit the canopy, and they fade out with the tree.</li>
+    <li><strong>Nothing green survives the reveal.</strong> The voxel canvas fades to zero as the crisp code fades in, so the end state is a plain white QR on the page background, no grass, leaves or slab behind it, with the contact links fading in directly beneath.</li>
+    <li><strong>WhatsApp</strong> uses <code>wa.me/447301620466</code>, one link that opens the app on a phone and WhatsApp Web on a desktop, with the chat to Josh already open.</li>
+    <li><strong>It grows into the page.</strong> As the camera lifts, the scene scales up and slides to the centre of the viewport to fill the empty space, then holds there before releasing. The growth is a CSS transform so it never disturbs the sticky layout, and the canvas backing store scales with it so the voxels stay sharp instead of blurring.</li>
+    <li><strong>Scanning:</strong> voxel tiles in isometric never scan, so at the top of the rotation it cross-fades to the real bitmap at 1:1. The footer QR is the always-available fallback.</li>
+    <li><strong>Leaves</strong> are green. Tree geometry is seeded, so it looks identical on every load. Animation pauses off-screen and on hidden tabs, and reduced-motion gets a static isometric view.</li>
+    <li><strong>&ldquo;Where I&rsquo;ve worked&rdquo; is commented out</strong> rather than deleted. Search the HTML for <code>parked</code> to restore it.</li>
+    <li><strong>Nothing moves under the cursor:</strong> the reference rotation pauses on hover and stops for good once you click into that area; job cards and reference cards have reserved heights so they never reflow.</li>
+    <li><strong>Structure</strong> follows the three reference pages: name → one-line thesis → link row → short sections → dated list → footer. One column, nothing decorative below the fold.</li>
+  </ul>
+</div>
+
+<script>
+(function(){
+  var root=document.documentElement;
+  root.classList.add('js');
+
+  /* sticky bar hairline */
+  var bar=document.getElementById('bar');
+  window.addEventListener('scroll',function(){
+    bar.classList.toggle('edge', window.scrollY>6);
+  },{passive:true});
+
+
+  /* scroll reveal */
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if(en.isIntersecting){ en.target.classList.add('seen'); io.unobserve(en.target); }
+      });
+    },{threshold:.06, rootMargin:'0px 0px -30px 0px'});
+    document.querySelectorAll('.rv').forEach(function(el){ io.observe(el); });
+  } else {
+    document.querySelectorAll('.rv').forEach(function(el){ el.classList.add('seen'); });
+  }
+
+  /* rotating candidate references */
+  var POOL=[
+    {q:"Straight answer on comp and scope before I had even sent a CV.", who:"Research Scientist \u00b7 humanoids"},
+    {q:"He had actually read the paper. Not the abstract, the paper.", who:"Research Engineer \u00b7 manipulation"},
+    {q:"Three roles, all relevant. No spam for eight months afterwards.", who:"Research Scientist \u00b7 VLA models"},
+    {q:"Told me not to take one of them. He was right.", who:"Senior Research Engineer \u00b7 robotics"},
+    {q:"Same-day feedback every time, through a slow process.", who:"PhD to industry \u00b7 embodied AI"},
+    {q:"Knew the team's publication history better than I did.", who:"Research Scientist \u00b7 world models"},
+    {q:"Never pitched me anything outside manipulation. Refreshing.", who:"Staff Research Engineer \u00b7 dexterous"},
+    {q:"Honest about where I was not a fit. Saved me two weeks.", who:"Research Scientist \u00b7 diffusion policies"},
+    {q:"Kept me updated without me ever having to chase.", who:"Research Engineer \u00b7 humanoids"}
+  ];
+  var slots=[].slice.call(document.querySelectorAll('.ref'));
+  if(slots.length){
+    var cursor=0, turn=0;
+    var fill=function(el,item){
+      el.querySelector('blockquote').textContent='\u201C'+item.q+'\u201D';
+      el.querySelector('figcaption').textContent=item.who;
+    };
+    slots.forEach(function(el){ fill(el, POOL[cursor++ % POOL.length]); });
+    if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+      var grid=document.getElementById('refs-grid');
+      var frozen=false, hovering=false;
+      if(grid){
+        grid.addEventListener('mouseenter',function(){ hovering=true; });
+        grid.addEventListener('mouseleave',function(){ hovering=false; });
+        grid.addEventListener('focusin',function(){ frozen=true; });
+        grid.addEventListener('click',function(){ frozen=true; });
+      }
+      setInterval(function(){
+        if(frozen || hovering || document.hidden) return;
+        var el=slots[turn++ % slots.length];
+        el.classList.add('swap');
+        setTimeout(function(){
+          fill(el, POOL[cursor++ % POOL.length]);
+          el.classList.remove('swap');
+        },460);
+      },4500);
+    }
+  }
+
+  /* live jobs: slider + shared apply panel */
+  var JOB_LABELS=[
+    "Research Scientist / Research Engineer · Video generation (London, Zurich, Palo Alto)",
+    "Research Scientist / Research Engineer · Simulations (London, Zurich, Palo Alto)",
+    "Research Scientist / Research Engineer · Controllable / interactive video (Los Angeles)",
+    "Research Scientist / Research Engineer · Robotics (London, Zurich, San Francisco, Palo Alto)",
+    "Research Scientist / Research Engineer · Diffusion policies (Zurich, San Francisco, Palo Alto)",
+    "Research Scientist / Research Engineer · Gaming (San Francisco)"
+  ];
+  var slider=document.getElementById('slider'),
+      jtrack=document.getElementById('jtrack'),
+      joblist=document.getElementById('joblist'),
+      showall=document.getElementById('showall'),
+      jprev=document.getElementById('jprev'),
+      jnext=document.getElementById('jnext'),
+      jcount=document.getElementById('jcount');
+
+  if(jtrack){
+    var step=function(){
+      var c=jtrack.querySelector('.jcard');
+      return c ? c.getBoundingClientRect().width + 12 : jtrack.clientWidth;
+    };
+    var pad=function(n){ return (n<10?'0':'')+n; };
+    var sync=function(){
+      var cards=jtrack.querySelectorAll('.jcard').length;
+      var idx=Math.round(jtrack.scrollLeft/step());
+      if(idx<0) idx=0;
+      if(idx>cards-1) idx=cards-1;
+      jcount.textContent=pad(idx+1)+' / '+pad(cards);
+      jprev.disabled = jtrack.scrollLeft <= 2;
+      jnext.disabled = jtrack.scrollLeft >= (jtrack.scrollWidth - jtrack.clientWidth - 2);
+    };
+    var ticking=false;
+    jtrack.addEventListener('scroll',function(){
+      if(ticking) return;
+      ticking=true;
+      requestAnimationFrame(function(){ sync(); ticking=false; });
+    },{passive:true});
+    jprev.addEventListener('click',function(){ jtrack.scrollBy({left:-step(),behavior:'smooth'}); });
+    jnext.addEventListener('click',function(){ jtrack.scrollBy({left: step(),behavior:'smooth'}); });
+    window.addEventListener('resize',sync);
+    sync();
+
+    showall.addEventListener('click',function(){
+      var toAll = showall.getAttribute('aria-pressed')!=='true';
+      showall.setAttribute('aria-pressed', toAll?'true':'false');
+      showall.textContent = toAll ? 'show slider' : 'show all';
+      slider.hidden = toAll;
+      joblist.hidden = !toAll;
+      if(!toAll) sync();
+    });
+  }
+
+  /* shared application panel */
+  var panel=document.getElementById('applyPanel');
+  if(panel){
+    var form=panel.querySelector('form'),
+        sent=panel.querySelector('.sent'),
+        hint=panel.querySelector('.hint'),
+        go=form.querySelector('.btn-go'),
+        need=[].slice.call(form.querySelectorAll('[data-req]'));
+
+    var ok=function(f){
+      if(f.type==='file') return !!(f.files && f.files.length);
+      if(f.type==='email') return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.value.trim());
+      return f.value.trim().length>0;
+    };
+    var check=function(){ go.disabled = !need.every(ok); };
+    need.forEach(function(f){
+      f.addEventListener('input',check);
+      f.addEventListener('change',check);
+    });
+
+    [].slice.call(document.querySelectorAll('[data-job]')).forEach(function(btn){
+      btn.addEventListener('click',function(){
+        var i=parseInt(btn.getAttribute('data-job'),10);
+        hint.textContent='Applying for '+(JOB_LABELS[i]||'this role');
+        form.reset(); check();
+        sent.hidden=true; form.hidden=false; panel.hidden=false;
+        var first=form.querySelector('input');
+        if(first) first.focus({preventScroll:true});
+        panel.scrollIntoView({block:'nearest',behavior:'smooth'});
+      });
+    });
+
+    form.querySelector('.btn-hide').addEventListener('click',function(){
+      panel.hidden=true;
+    });
+
+    form.addEventListener('submit',function(e){
+      e.preventDefault();
+      if(go.disabled) return;
+      sent.textContent='Prototype only. Nothing was sent and no file was uploaded. This form needs wiring to a real inbox or ATS before launch.';
+      form.hidden=true; sent.hidden=false;
+    });
+  }
+
+
+  /* ============ isometric voxel bonsai + WeChat QR paving ============ */
+  (function(){
+    var cv=document.getElementById('bonsai');
+    var scene=document.getElementById('scene');
+    var crisp=document.getElementById('qrCrisp');
+    var cap=document.getElementById('sceneCap');
+    if(!cv||!scene) return;
+    var ctx=cv.getContext('2d');
+  
+    var QR=[
+      '1111111011110111010111000100001111111',
+      '1000001000110111010100011100101000001',
+      '1011101001010010111001001001101011101',
+      '1011101010101101011000101101001011101',
+      '1011101010101011011100100011101011101',
+      '1000001011111001010110001000101000001',
+      '1111111010101010101010101010101111111',
+      '0000000011010001100001001101100000000',
+      '1000101111000110100010010100011111001',
+      '0001000111001110011100101010101001110',
+      '0010101111110111010100111110100010000',
+      '0110100000011001110111110000000110110',
+      '0011011000001000011001101001001001111',
+      '1010000000001000000000000111100011010',
+      '0011011001000011111111100001110111110',
+      '0001010110111011111111101011100110101',
+      '0101101111101011000111101111101011101',
+      '1100000101111010001011100100011110010',
+      '0100101100010011000001100101001100000',
+      '0010100011110011000000101011111001110',
+      '1010001101011011111001101000011101100',
+      '1101100011110011111111100011110110000',
+      '0111101010000011111111101111001111100',
+      '0010100111011000000000000100111110110',
+      '0010101100101001100110010100010111100',
+      '1110010000100100011100101010101001100',
+      '0000011110101111001100111110100010100',
+      '0010010011101101111111010010001111110',
+      '1110011001001000011000101001111111101',
+      '0000000011111101100011010110100010010',
+      '1111111011000101010000011000101010000',
+      '1000001001101100111000101010100011110',
+      '1011101011001110001100111110111111110',
+      '1011101001000000100111000001011100010',
+      '1011101001010010110010000010111001010',
+      '1000001000000100010001101010110011110',
+      '1111111010101111010101011010011100011'
+    ];
+    var N=QR.length;
+    var BORDER=2;                 // thin rim outside the code
+    var HALF=N/2;
+    var SLAB=HALF+BORDER;
+  
+    /* the WeChat PNG is embedded directly on the overlay */
+  
+    /* ---------- deterministic rng so the tree is identical every load ---------- */
+    var seed=20260826;
+    function rnd(){ seed=(seed*1664525+1013904223)&0x7fffffff; return seed/0x7fffffff; }
+  
+    /* ---------- palettes ---------- */
+    var PAL={
+      leaf:['#8fe3ac','#5cc386','#3d9061'],
+      bark:['#7b6449','#5d4c37','#42352a'],
+      grass:['#63b87b','#47905c','#356b45'],
+      clump:[['#6ec085','#4d9765','#38714a'],['#5fb478','#428c59','#316841'],['#79c98f','#56a06d','#3d7850']],
+      slab:['#d7d4ca','#b4b1a7','#96938b'],
+      mod:['#16140f','#100f0b','#0b0a07']
+    };
+    function pal(){ return PAL; }
+  
+    /* ---------- build the static voxel set ---------- */
+    var vox=[];   // {x,y,z,k}  k: 'mod' | 'bark' | 'leaf' | 'grass'
+    function box(x,y,z,k){ vox.push({x:x,y:y,z:z,k:k}); }
+  
+    // The dark QR modules ARE the grass. From a low angle the clumps overlap and read as
+    // a planted garden floor; only from directly above do they resolve into the code.
+    var mods=[];
+    for(var r=0;r<N;r++) for(var c=0;c<N;c++){
+      if(QR[r][c]!=='1') continue;
+      mods.push({
+        x:c-HALF, z:r-HALF,
+        h:1.9+rnd()*1.6,
+        ox:(rnd()-0.5)*0.6, oz:(rnd()-0.5)*0.6,
+        tint:Math.floor(rnd()*3)
+      });
+    }
+    mods.forEach(function(m){ vox.push({x:m.x,y:0,z:m.z,k:'mod',m:m}); });
+
+    // loose grass on the rim so the edge reads as planted too
+    for(var gi=0; gi<70; gi++){
+      var side=Math.floor(rnd()*4), a=(rnd()*2-1)*SLAB, b=HALF+0.4+rnd()*(BORDER-0.4);
+      var gx = side===0? a : side===1? a : side===2? -b : b;
+      var gz = side===0? -b : side===1? b : side===2? a : a;
+      var gh = 1+Math.floor(rnd()*2);
+      for(var gy=0; gy<gh; gy++) box(Math.round(gx),gy,Math.round(gz),'grass');
+    }
+
+    // bonsai: short leaning trunk, a few arms, flat foliage pads
+    var pads=[];
+    (function tree(){
+      var tx=0, tz=0, h=34, base=2;
+      var arms=[11,18,25,29];
+      for(var y=base;y<base+h;y++){
+        var t=(y-base)/h;
+        // gentle bonsai lean, pulled back toward centre so it stays planted mid-slab
+        tx += (rnd()-0.5)*0.9 - tx*0.09;
+        tz += (rnd()-0.5)*0.8 - tz*0.09;
+        var rad = t<0.25 ? 2 : t<0.6 ? 1.5 : 1;
+        var ri=Math.round(rad);
+        for(var dx=-ri;dx<=ri;dx++) for(var dz=-ri;dz<=ri;dz++){
+          if(dx*dx+dz*dz > rad*rad+0.4) continue;
+          box(Math.round(tx)+dx, y, Math.round(tz)+dz, 'bark');
+        }
+        if(arms.indexOf(y)>=0){
+          var dir=rnd()*Math.PI*2, len=8+Math.floor(rnd()*6);
+          var bx=tx, bz=tz, by=y;
+          for(var s2=0;s2<len;s2++){
+            bx+=Math.cos(dir)*1.1; bz+=Math.sin(dir)*1.1;
+            if(s2%3===2) by+=1;
+            box(Math.round(bx),by,Math.round(bz),'bark');
+            box(Math.round(bx),by+1,Math.round(bz),'bark');
+          }
+          pads.push({x:bx,y:by+3,z:bz,r:8+rnd()*3});
+        }
+      }
+      pads.push({x:tx,y:base+h+3,z:tz,r:9.5});   // apex pad
+    })();
+  
+    // flattened ellipsoid foliage
+    pads.forEach(function(pd){
+      var R=Math.ceil(pd.r);
+      for(var dx=-R;dx<=R;dx++) for(var dz=-R;dz<=R;dz++) for(var dy=-2;dy<=2;dy++){
+        var d=(dx*dx+dz*dz)/(pd.r*pd.r) + (dy*dy)/5.2;
+        if(d<=1 && rnd()>0.10)
+          box(Math.round(pd.x)+dx, Math.round(pd.y)+dy, Math.round(pd.z)+dz, 'leaf');
+      }
+    });
+  
+    var treeTop=0; vox.forEach(function(v){ if(v.y>treeTop) treeTop=v.y; });
+  
+    /* ---------- butterflies ---------- */
+    var BWING=['#e8b04b','#7fc7ff','#f2f0ea'];   // orange, blue, white
+    var flutter=[];
+    for(var bi=0; bi<7; bi++){
+      var bp=pads[Math.floor(rnd()*pads.length)];
+      flutter.push({
+        ox:bp.x, oy:bp.y+1.4+rnd()*4.5, oz:bp.z,
+        r:bp.r*0.85+2+rnd()*3,
+        a:rnd()*6.283, sp:(rnd()<0.5?-1:1)*(0.010+rnd()*0.015),
+        bob:rnd()*6.283, bsp:0.03+rnd()*0.03,
+        ph:rnd()*6.283, fsp:0.34+rnd()*0.26,
+        ci:bi, x:0, y:0, z:0
+      });
+    }
+
+    /* ---------- falling leaves ---------- */
+    var leaves=[];
+    function spawnLeaf(){
+      var pd=pads[Math.floor(rnd()*pads.length)];
+      leaves.push({
+        x:pd.x+(rnd()-0.5)*pd.r*2, y:pd.y+(rnd()-0.5)*1.5, z:pd.z+(rnd()-0.5)*pd.r*2,
+        vy:-(0.022+rnd()*0.03), dx:(rnd()-0.5)*0.016, dz:(rnd()-0.5)*0.016,
+        ph:rnd()*6.28, rest:0, life:1
+      });
+    }
+    for(var li=0; li<34; li++){ spawnLeaf(); leaves[li].y = rnd()*treeTop; }
+  
+    /* ---------- projection ---------- */
+    var yaw=Math.PI/4, pitch=32*Math.PI/180, S=8, cx=0, cy=0;
+    function proj(x,y,z){
+      var ca=Math.cos(yaw), sa=Math.sin(yaw);
+      var u=x*ca - z*sa, w=x*sa + z*ca;
+      var cp=Math.cos(pitch), sp=Math.sin(pitch);
+      return [cx + u*S, cy + (w*sp - y*cp)*S];
+    }
+    function orderKey(x,y,z){
+      var sa=Math.sin(yaw), ca=Math.cos(yaw);
+      var w=x*sa + z*ca;
+      return w*Math.cos(pitch) + y*Math.sin(pitch);
+    }
+  
+    function fitScale(w,h,t){
+      // At the isometric view we frame the tree and let the ground run past the edges,
+      // so the tree reads big. As the camera lifts we pull back to the full slab so the
+      // whole code is visible and scannable.
+      var TIGHT=SLAB+0.5;   // one framing throughout: composition unchanged
+      var e=TIGHT + (SLAB+0.5-TIGHT)*(t===undefined?1:t);
+      var pts=[];
+      [[-e,-e],[e,-e],[e,e],[-e,e]].forEach(function(c){
+        [0,treeTop+2].forEach(function(yy){
+          var ca=Math.cos(yaw), sa=Math.sin(yaw);
+          var u=c[0]*ca - c[1]*sa, ww=c[0]*sa + c[1]*ca;
+          pts.push([u, ww*Math.sin(pitch) - yy*Math.cos(pitch)]);
+        });
+      });
+      var xs=pts.map(function(q){return q[0]}), ys=pts.map(function(q){return q[1]});
+      var spanX=Math.max.apply(null,xs)-Math.min.apply(null,xs);
+      var spanY=Math.max.apply(null,ys)-Math.min.apply(null,ys);
+      S=Math.min(w*0.94/spanX, h*0.94/spanY);
+      cx=w/2 - (Math.max.apply(null,xs)+Math.min.apply(null,xs))/2*S;
+      cy=h/2 - (Math.max.apply(null,ys)+Math.min.apply(null,ys))/2*S;
+    }
+  
+    function hex2rgb(h){ return [parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)]; }
+    function mix(a,b,t){
+      var A=hex2rgb(a), B=hex2rgb(b);
+      return 'rgb('+Math.round(A[0]+(B[0]-A[0])*t)+','+Math.round(A[1]+(B[1]-A[1])*t)+','+Math.round(A[2]+(B[2]-A[2])*t)+')';
+    }
+    function mix3(ca,cb,t){ return [mix(ca[0],cb[0],t),mix(ca[1],cb[1],t),mix(ca[2],cb[2],t)]; }
+
+    /* two-frame pixel butterfly: '1' wing, 'b' body */
+    var BF_OPEN=[
+      "11...11",
+      "1111111",
+      ".11b11.",
+      "..1b1..",
+      "...b..."
+    ];
+    var BF_SHUT=[
+      "..1.1..",
+      "..1b1..",
+      "..1b1..",
+      "...b...",
+      "...b..."
+    ];
+    function butterfly(B,alpha){
+      var pt=proj(B.x,B.y,B.z);
+      var ps=Math.max(2, S*0.52);   // big enough for the silhouette to read
+      var fr=Math.sin(B.ph)>0 ? BF_OPEN : BF_SHUT;
+      var h=fr.length, wd=fr[0].length;
+      var x0=pt[0]-wd*ps/2, y0=pt[1]-h*ps/2;
+      var step=Math.ceil(ps);
+      ctx.globalAlpha=alpha;
+      for(var r=0;r<h;r++){
+        for(var c=0;c<wd;c++){
+          var ch=fr[r].charAt(c);
+          if(ch==='.') continue;
+          ctx.fillStyle = (ch==='b') ? B.body : B.wing;
+          ctx.fillRect(Math.round(x0+c*ps), Math.round(y0+r*ps), step, step);
+        }
+      }
+    }
+
+    function quad(a,b,c,d,fill){
+      ctx.beginPath();
+      ctx.moveTo(a[0],a[1]); ctx.lineTo(b[0],b[1]); ctx.lineTo(c[0],c[1]); ctx.lineTo(d[0],d[1]);
+      ctx.closePath(); ctx.fillStyle=fill; ctx.fill();
+    }
+  
+    function cube(x,y,z,sx,sy,sz,cols){
+      var p000=proj(x,y+sy,z), p100=proj(x+sx,y+sy,z),
+          p110=proj(x+sx,y+sy,z+sz), p010=proj(x,y+sy,z+sz);
+      quad(p000,p100,p110,p010,cols[0]);                       // top
+      var b100=proj(x+sx,y,z), b110=proj(x+sx,y,z+sz), b010=proj(x,y,z+sz);
+      quad(p100,b100,b110,p110,cols[1]);                       // +x face
+      quad(p010,p110,b110,b010,cols[2]);                       // +z face
+    }
+  
+    /* ---------- scroll driven camera ---------- */
+    var prog=0;
+    var artCol=document.getElementById('artCol'), artPin=document.getElementById('artPin');
+    function padTop(){ return parseFloat(getComputedStyle(artCol).paddingTop)||0; }
+    // scroll offset at which the pin engages
+    function pinStart(){
+      var y=window.pageYOffset||document.documentElement.scrollTop||0;
+      var docTop=artCol.getBoundingClientRect().top + y;
+      return Math.max(0, docTop + padTop() - 78);
+    }
+    // how far the pin can travel inside its column, padding excluded
+    function pinTravel(){
+      return Math.max(120, artCol.offsetHeight - padTop() - artPin.offsetHeight);
+    }
+    function readScroll(){
+      var y=window.pageYOffset||document.documentElement.scrollTop||0;
+      var s0=pinStart();
+      var span=Math.max(150, pinTravel()*0.55);   // finish inside the pinned range, then hold
+      prog=Math.max(0,Math.min(1,(y-s0)/span));
+    }
+
+    /* grow the scene toward the centre of the screen as the camera lifts.
+       This is a transform, so it never feeds back into the sticky layout. */
+    var artGrow=document.getElementById('artGrow');
+    var qrLinks=document.getElementById('qrLinks');
+    var growS=1;
+    var BASE=1.25;               // whole scene (tree and platform) larger at rest
+    function layoutGrow(t){
+      var pr=artPin.getBoundingClientRect();
+      var baseW=pr.width || 1;
+      var target=Math.min(window.innerWidth*0.50, window.innerHeight*0.58);
+      var S=Math.max(BASE, target/baseW);
+      var s=BASE+(S-BASE)*t;
+      var cx=pr.left + baseW/2;
+      var cy=78 + baseW/2;               // anchored to the sticky top, NOT the live rect,
+                                         // so the scene scrolls away once the pin releases
+      // at rest, shift left by half the enlargement so the bigger scene cannot overflow
+      var baseDx=-(baseW*(BASE-1)/2);
+      var dx=baseDx + ((window.innerWidth/2 - cx) - baseDx)*t;
+      var dy=(window.innerHeight*0.36 - cy)*t;   // leaves room for the links beneath
+      artGrow.style.transform='translate('+dx.toFixed(1)+'px,'+dy.toFixed(1)+'px) scale('+s.toFixed(4)+')';
+      growS=s;
+    }
+
+    var dpr=1, cw=0, ch=0;
+    function resize(){
+      // back the canvas at the on-screen size so growing it never blurs
+      dpr=Math.min((window.devicePixelRatio||1)*growS, 4);
+      // clientWidth/Height are layout sizes, unaffected by the growth transform, so the
+      // drawing space keeps matching the element box the QR overlay is positioned inside
+      cw=Math.max(1, cv.clientWidth  || Math.round(cv.getBoundingClientRect().width));
+      ch=Math.max(1, cv.clientHeight || Math.round(cv.getBoundingClientRect().height));
+      cv.width=Math.round(cw*dpr); cv.height=Math.round(ch*dpr);
+      ctx.setTransform(dpr,0,0,dpr,0,0);
+    }
+  
+    var still=window.matchMedia('(prefers-reduced-motion: reduce)');
+  
+    function draw(){
+      var P=pal();
+      var ease=prog<0.5 ? 2*prog*prog : 1-Math.pow(-2*prog+2,2)/2;
+      var camT = still.matches ? 0 : Math.min(1, ease/0.78);
+      pitch=(32 + camT*56)*Math.PI/180;
+      yaw=(45 - Math.max(0,(camT-0.45)/0.55)*45)*Math.PI/180;
+  
+      var morph  = still.matches ? 0 : Math.max(0,Math.min(1,(prog-0.28)/0.50));
+      var canopy = still.matches ? 1 : 1 - 0.92*Math.max(0,Math.min(1,(prog-0.34)/0.40));
+      var crispA = still.matches ? 0 : Math.max(0,Math.min(1,(prog-0.80)/0.20));
+  
+      layoutGrow(still.matches ? 0 : Math.max(0,Math.min(1,(prog-0.05)/0.80)));
+      resize();
+      fitScale(cw,ch,camT);
+      ctx.clearRect(0,0,cw,ch);
+  
+      // slab top + rim
+      var e=SLAB;
+      var t1=proj(-e,0,-e), t2=proj(e,0,-e), t3=proj(e,0,e), t4=proj(-e,0,e);
+      quad(t1,t2,t3,t4,P.slab[0]);
+      var d2=proj(e,-2,-e), d3=proj(e,-2,e), d4=proj(-e,-2,e);
+      quad(t2,d2,d3,t3,P.slab[1]);
+      quad(t4,t3,d3,d4,P.slab[2]);
+  
+      // everything else, painter-sorted
+      var list=vox.slice();
+      if(!still.matches){
+        leaves.forEach(function(L){ list.push({x:L.x,y:L.y,z:L.z,k:'fall',L:L}); });
+        flutter.forEach(function(B){ list.push({x:B.x,y:B.y,z:B.z,k:'bfly',B:B}); });
+      }
+      list.sort(function(a,b){ return orderKey(a.x,a.y,a.z)-orderKey(b.x,b.y,b.z); });
+  
+      for(var i=0;i<list.length;i++){
+        var v=list[i];
+        if(v.k==='mod'){
+          var m=v.m;
+          var hh = m.h + (0.42 - m.h)*morph;
+          var jx = m.ox*(1-morph), jz = m.oz*(1-morph);
+          var w  = 0.74 + 0.26*morph;
+          ctx.globalAlpha=1;
+          cube(v.x+jx+(1-w)/2, 0, v.z+jz+(1-w)/2, w, hh, w, mix3(P.clump[m.tint], P.mod, morph));
+        } else if(v.k==='grass'){
+          ctx.globalAlpha=1-0.8*morph; cube(v.x+0.12,v.y,v.z+0.12,0.76,1.25,0.76,P.grass);
+        } else if(v.k==='bark'){
+          ctx.globalAlpha=Math.max(canopy,0.35); cube(v.x,v.y,v.z,1,1,1,P.bark);
+        } else if(v.k==='leaf'){
+          ctx.globalAlpha=canopy; cube(v.x,v.y,v.z,1,1,1,P.leaf);
+        } else if(v.k==='bfly'){
+          butterfly(v.B, canopy);
+        } else {
+          var L=v.L;
+          ctx.globalAlpha=canopy*L.life;
+          var sz=0.95;
+          cube(L.x,L.y,L.z,sz,sz*0.55,sz,P.leaf);
+        }
+      }
+      ctx.globalAlpha=1;
+  
+      // crisp, genuinely scannable QR at the top of the rotation
+      {
+        var a=proj(-HALF,0,-HALF), b=proj(HALF,0,HALF);
+        var side=Math.abs(b[0]-a[0]);
+        var px=Math.max(40, Math.round(side));
+        crisp.style.width=px+'px'; crisp.style.height=px+'px';
+        crisp.style.padding=Math.round(px*0.05)+'px';
+        var mid=proj(0,0,0);
+        crisp.style.left=Math.round(mid[0])+'px';
+        crisp.style.top=Math.round(mid[1])+'px';
+      }
+      var qa=Math.round(crispA*100)/100;
+      if(crisp._a!==qa){ crisp.style.opacity=qa; crisp._a=qa; }
+      // nothing green left behind the finished code
+      var vis=Math.round((1-crispA)*100)/100;
+      if(cv._v!==vis){ cv.style.opacity=vis; cv._v=vis; }
+      if(qrLinks){
+        var qb=crisp.getBoundingClientRect();
+        var onScreen = qb.bottom > 60 && qb.top < window.innerHeight - 40;
+        var la = (qa>0.04 && onScreen) ? qa : 0;
+        if(qrLinks._a!==la){
+          qrLinks.style.opacity=la;
+          qrLinks.style.visibility = la>0.04 ? 'visible' : 'hidden';
+          qrLinks.style.pointerEvents = la>0.9 ? 'auto' : 'none';
+          qrLinks._a=la;
+        }
+        if(la>0.04){
+          qrLinks.style.left=Math.round(qb.left+qb.width/2)+'px';
+          qrLinks.style.top=Math.round(qb.bottom+20)+'px';
+        }
+      }
+      if(cap){
+        var sr=scene.getBoundingClientRect();
+        cap.style.left=Math.round(sr.left-20)+'px';
+        cap.style.top=Math.round(sr.top+sr.height*0.52)+'px';
+        var ca=Math.round((1-Math.max(0,Math.min(1,(prog-0.02)/0.18)))*100)/100;
+        if(cap._a!==ca){
+          cap.style.opacity=ca;
+          cap.style.visibility = ca>0.04 ? 'visible' : 'hidden';
+          cap._a=ca;
+        }
+      }
+    }
+  
+    function step(){
+      if(!still.matches){
+        for(var bi2=0; bi2<flutter.length; bi2++){
+          var B=flutter[bi2];
+          if(!B.wing){
+            var c0=BWING[B.ci%BWING.length];
+            B.wing=c0;
+            B.body=mix(c0,'#000000',0.58);
+          }
+          B.a+=B.sp; B.bob+=B.bsp; B.ph+=B.fsp;
+          B.x=B.ox+Math.cos(B.a)*B.r;
+          B.z=B.oz+Math.sin(B.a)*B.r*0.8;
+          B.y=B.oy+Math.sin(B.bob)*1.7;
+        }
+        for(var i=leaves.length-1;i>=0;i--){
+          var L=leaves[i];
+          if(L.y>0.9){
+            L.y+=L.vy;
+            L.ph+=0.06;
+            L.x+=L.dx+Math.sin(L.ph)*0.012;
+            L.z+=L.dz+Math.cos(L.ph*0.8)*0.012;
+          } else {
+            L.y=0.9; L.rest+=1;
+            if(L.rest>140) L.life-=0.02;
+          }
+          if(L.life<=0 || L.y<-4 || Math.abs(L.x)>SLAB+4 || Math.abs(L.z)>SLAB+4){
+            leaves.splice(i,1); spawnLeaf();
+          }
+        }
+      }
+      draw();
+    }
+  
+    /* ---------- run only while visible ---------- */
+    var running=false, raf=0;
+    function loop(){ step(); raf=requestAnimationFrame(loop); }
+    function start(){ if(!running){ running=true; loop(); } }
+    function stop(){ if(running){ running=false; cancelAnimationFrame(raf); } }
+  
+    readScroll();
+    window.addEventListener('scroll',function(){ readScroll(); if(!running) draw(); },{passive:true});
+    window.addEventListener('resize',function(){ draw(); });
+    if(still.matches){
+      if(!crisp.complete) crisp.addEventListener('load',draw);
+      draw();
+    } else if('IntersectionObserver' in window){
+      new IntersectionObserver(function(en){
+        en[0].isIntersecting ? start() : stop();
+      },{threshold:0}).observe(scene);
+    } else { start(); }
+    document.addEventListener('visibilitychange',function(){ document.hidden ? stop() : start(); });
+  })();
+  
+  /* build notes */
+  var nb=document.getElementById('nbtn'), np=document.getElementById('notes');
+  nb.addEventListener('click',function(){ np.classList.toggle('open'); });
+})();
+</script>
+
+</body>
+</html>
