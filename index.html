@@ -360,6 +360,12 @@ html.js .rv{opacity:0; transform:translateY(14px); transition:opacity .55s ease,
 html.js .rv.seen{opacity:1; transform:none}
 
 @media(max-width:640px){
+  /* the desktop pin/grow choreography does not apply on a phone */
+  .art-grow{transform:none !important}
+  .scene{max-width:320px; margin:0 auto}
+  .scene-cap{position:static; transform:none; text-align:center; margin:12px 0 0}
+  .qr-links{position:static; transform:none; margin:16px auto 0; max-width:none}
+  .lang{font-size:14px; padding:9px 15px}
   body{font-size:16.5px}
   .hero{padding:40px 0 34px}
   .hero-grid{grid-template-columns:1fr; gap:30px}
@@ -1128,11 +1134,21 @@ html.js .rv.seen{opacity:1; transform:none}
     function pinTravel(){
       return Math.max(120, artCol.offsetHeight - padTop() - artPin.offsetHeight);
     }
+    // phones have no sticky pin, so progress cannot be derived from it
+    function narrow(){ return window.matchMedia('(max-width:640px)').matches; }
     function readScroll(){
+      if(narrow()){
+        // rotate as the scene travels up the viewport: 0 at 78% height, 1 at 26%
+        var r=scene.getBoundingClientRect();
+        var mid=r.top + r.height/2;
+        var from=window.innerHeight*0.78, span=window.innerHeight*0.52;
+        prog=Math.max(0,Math.min(1,(from-mid)/span));
+        return;
+      }
       var y=window.pageYOffset||document.documentElement.scrollTop||0;
       var s0=pinStart();
-      var span=Math.max(150, pinTravel()*0.55);   // finish inside the pinned range, then hold
-      prog=Math.max(0,Math.min(1,(y-s0)/span));
+      var span2=Math.max(150, pinTravel()*0.55);  // finish inside the pinned range, then hold
+      prog=Math.max(0,Math.min(1,(y-s0)/span2));
     }
 
     /* grow the scene toward the centre of the screen as the camera lifts.
@@ -1142,6 +1158,11 @@ html.js .rv.seen{opacity:1; transform:none}
     var growS=1;
     var BASE=1.25;               // whole scene (tree and platform) larger at rest
     function layoutGrow(t){
+      if(narrow()){                      // fits its column, nothing to scale or re-centre
+        if(artGrow.style.transform!=='none') artGrow.style.transform='none';
+        growS=1;
+        return;
+      }
       var pr=artPin.getBoundingClientRect();
       var baseW=pr.width || 1;
       var target=Math.min(window.innerWidth*0.50, window.innerHeight*0.58);
@@ -1256,15 +1277,17 @@ html.js .rv.seen{opacity:1; transform:none}
           qrLinks.style.pointerEvents = la>0.9 ? 'auto' : 'none';
           qrLinks._a=la;
         }
-        if(la>0.04){
+        if(la>0.04 && !narrow()){
           qrLinks.style.left=Math.round(qb.left+qb.width/2)+'px';
           qrLinks.style.top=Math.round(qb.bottom+20)+'px';
         }
       }
       if(cap){
-        var sr=scene.getBoundingClientRect();
-        cap.style.left=Math.round(sr.left-20)+'px';
-        cap.style.top=Math.round(sr.top+sr.height*0.52)+'px';
+        if(!narrow()){
+          var sr=scene.getBoundingClientRect();
+          cap.style.left=Math.round(sr.left-20)+'px';
+          cap.style.top=Math.round(sr.top+sr.height*0.52)+'px';
+        }
         var ca=Math.round((1-Math.max(0,Math.min(1,(prog-0.02)/0.18)))*100)/100;
         if(cap._a!==ca){
           cap.style.opacity=ca;
