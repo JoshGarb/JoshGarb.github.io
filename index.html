@@ -46,11 +46,11 @@ body{
   display:flex; align-items:center; gap:18px;
 }
 .lang{
-  font-family:var(--mono); font-size:12px; letter-spacing:.06em;
-  background:transparent; border:1px solid var(--rule); color:var(--ink-2);
-  padding:6px 12px; border-radius:7px; cursor:pointer; transition:.18s;
+  font-family:var(--mono); font-size:15px; font-weight:500; letter-spacing:.08em;
+  background:var(--raise); border:1px solid var(--acc-line); color:var(--ink);
+  padding:11px 20px; border-radius:9px; cursor:pointer; transition:.18s;
 }
-.lang:hover{color:var(--acc); border-color:var(--acc-line)}
+.lang:hover{color:var(--acc-ink); background:var(--acc); border-color:var(--acc)}
 .bar nav{margin-left:auto; display:flex; align-items:center; gap:2px}
 .bar nav a{
   font-family:var(--mono); font-size:12.5px; color:var(--ink-2); text-decoration:none;
@@ -358,27 +358,6 @@ footer{
 /* reveal, opt-in so no-JS still shows everything */
 html.js .rv{opacity:0; transform:translateY(14px); transition:opacity .55s ease, transform .55s cubic-bezier(.2,.8,.2,1)}
 html.js .rv.seen{opacity:1; transform:none}
-
-/* build notes */
-#nbtn{
-  position:fixed; right:16px; bottom:16px; z-index:99; cursor:pointer;
-  font-family:var(--mono); font-size:11.5px; letter-spacing:.05em;
-  background:var(--ink); color:var(--paper); border:0; padding:10px 14px;
-  border-radius:8px; box-shadow:var(--shadow); transition:transform .18s;
-}
-#nbtn:hover{transform:translateY(-2px)}
-#notes{
-  position:fixed; right:16px; bottom:60px; z-index:99;
-  width:min(360px,calc(100vw - 32px)); max-height:64vh; overflow:auto;
-  background:var(--raise); border:1px solid var(--rule); border-radius:10px;
-  padding:18px; box-shadow:var(--shadow); display:none; font-size:13.5px;
-}
-#notes.open{display:block}
-#notes h4{font-family:var(--disp); font-weight:700; font-size:15px; margin:0 0 3px}
-#notes .nsub{font-family:var(--mono); font-size:10.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-3); margin:0 0 13px}
-#notes ul{margin:0; padding-left:17px; color:var(--ink-2)}
-#notes li{margin-bottom:9px}
-#notes code{font-family:var(--mono); font-size:12px; background:var(--sunk); padding:1px 4px; border-radius:3px; color:var(--ink)}
 
 @media(max-width:640px){
   body{font-size:16.5px}
@@ -700,36 +679,6 @@ html.js .rv.seen{opacity:1; transform:none}
     <span class="fname">Josh Garbutt &middot; The World Model Recruiter</span>
   </footer>
 </div>
-
-<button id="nbtn" type="button">Build notes</button>
-<div id="notes">
-  <h4>Notes for the build</h4>
-  <p class="nsub">Prototype annotation. Delete before shipping</p>
-  <ul>
-    <li><strong>Verticals are Josh's own list</strong>, world models only. Deliberately not LLMs, agents, games, simulation or AV. The five roles under Track come from the current <code>/team/josh-garbutt</code> page.</li>
-    <li><strong>References rotate:</strong> three cards visible, swapping one at a time from a larger pool every 3s, so a handful of quotes reads as constant activity. Pauses under reduced-motion.</li>
-    <li><strong>Live jobs are real</strong>, Josh supplied them. They still need to be editable without a deploy, and each row wants a date so the list visibly moves.</li>
-    <li><strong>The apply form does not submit anywhere.</strong> Validation and the open/close behaviour are real; the submit handler only prints a notice. It needs wiring to an inbox or ATS, plus server-side validation, a file-size/type limit, and a privacy notice before it goes live.</li>
-    <li><strong>No photo on the current page</strong>, just a grey <code>JG</code> box. Either use a real one or drop the slot; a placeholder is worse than neither.</li>
-    <li><strong>Type</strong> is Fraunces + Public Sans + DM Mono. The character comes from the type, not from effects.</li>
-    <li><strong>Dark only, by choice.</strong> No toggle, no light palette, no <code>prefers-color-scheme</code> branch, every colour is painted explicitly on <code>:root</code> so the page looks the same whatever the viewer’s OS is set to. One accent: a green that nods to the Growth mark. Amber only marks placeholder content.</li>
-    <li><strong>The bonsai is a canvas voxel scene</strong>, no libraries. The paving is Josh&rsquo;s real WeChat QR, 37&times;37 modules, raised one block each. Scroll lifts the camera from isometric to top-down and swings the yaw square-on; the canopy fades so the code is readable.</li>
-    <li><strong>Scale, not geometry.</strong> The scene renders 25% larger at rest, tree and platform together, instead of the tree being re-proportioned. Tree geometry is back to the approved version.</li>
-    <li><strong>The WeChat code lives only in the tree now.</strong> The duplicate in Contact is gone; its embedded PNG moved onto the tree overlay, which had been reading its image from that element.</li>
-    <li><strong>Footer</strong> is a single centred &ldquo;Top&rdquo; control with a proper hit area, the duplicate LinkedIn/GitHub/Email links are gone, since the Contact section directly above already carries them.</li>
-    <li><strong>&ldquo;Scroll to look down&rdquo;</strong> sits in the clear space to the left of the tree rather than under it, since the enlarged scene covers that area. It fades out as soon as you start scrolling.</li>
-    <li><strong>Butterflies</strong> are two-frame pixel sprites drawn in screen space, so the silhouette reads at small size rather than turning into a coloured smudge. Orange, blue and white; wings open and shut as they orbit the canopy, and they fade out with the tree.</li>
-    <li><strong>Nothing green survives the reveal.</strong> The voxel canvas fades to zero as the crisp code fades in, so the end state is a plain white QR on the page background, no grass, leaves or slab behind it, with the contact links fading in directly beneath.</li>
-    <li><strong>WhatsApp</strong> uses <code>wa.me/447301620466</code>, one link that opens the app on a phone and WhatsApp Web on a desktop, with the chat to Josh already open.</li>
-    <li><strong>It grows into the page.</strong> As the camera lifts, the scene scales up and slides to the centre of the viewport to fill the empty space, then holds there before releasing. The growth is a CSS transform so it never disturbs the sticky layout, and the canvas backing store scales with it so the voxels stay sharp instead of blurring.</li>
-    <li><strong>Scanning:</strong> voxel tiles in isometric never scan, so at the top of the rotation it cross-fades to the real bitmap at 1:1. The footer QR is the always-available fallback.</li>
-    <li><strong>Leaves</strong> are green. Tree geometry is seeded, so it looks identical on every load. Animation pauses off-screen and on hidden tabs, and reduced-motion gets a static isometric view.</li>
-    <li><strong>&ldquo;Where I&rsquo;ve worked&rdquo; is commented out</strong> rather than deleted. Search the HTML for <code>parked</code> to restore it.</li>
-    <li><strong>Nothing moves under the cursor:</strong> the reference rotation pauses on hover and stops for good once you click into that area; job cards and reference cards have reserved heights so they never reflow.</li>
-    <li><strong>Structure</strong> follows the three reference pages: name → one-line thesis → link row → short sections → dated list → footer. One column, nothing decorative below the fold.</li>
-  </ul>
-</div>
-
 <script>
 (function(){
   var root=document.documentElement;
@@ -1449,7 +1398,6 @@ html.js .rv.seen{opacity:1; transform:none}
     function translatable(n){
       var p = n.parentNode;
       if(!p || SKIP.test(p.nodeName)) return false;
-      if(p.closest && p.closest('#notes, #nbtn')) return false;   // dev notes stay english
       return !!n.nodeValue.trim();
     }
   
@@ -1497,11 +1445,6 @@ html.js .rv.seen{opacity:1; transform:none}
     if(!saved && /^zh/i.test(navigator.language || '')) saved = 'zh';   // chinese browsers land on chinese
     if(saved === 'zh') window.__setLang('zh');
   })();
-  
-  
-  /* build notes */
-  var nb=document.getElementById('nbtn'), np=document.getElementById('notes');
-  nb.addEventListener('click',function(){ np.classList.toggle('open'); });
 })();
 </script>
 
