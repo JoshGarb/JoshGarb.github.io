@@ -16,9 +16,9 @@
   --acc:#6fc794; --acc-ink:#12110e; --acc-wash:rgba(111,199,148,.12); --acc-line:rgba(111,199,148,.34);
   --pred:#e0a852; --pred-line:rgba(224,168,82,.5); --pred-wash:rgba(224,168,82,.11);
   --shadow:0 1px 2px rgba(0,0,0,.35), 0 10px 30px -16px rgba(0,0,0,.65);
-  --disp:Georgia,"Times New Roman","Nimbus Roman",serif;
-  --body:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,Roboto,"Helvetica Neue",Arial,sans-serif;
-  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"DejaVu Sans Mono",monospace;
+  --disp:Georgia,"Times New Roman","Songti SC","Noto Serif CJK SC","Source Han Serif SC",serif;
+  --body:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,Roboto,"Helvetica Neue",Arial,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC",sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"DejaVu Sans Mono","PingFang SC","Microsoft YaHei",monospace;
   --col:min(720px,100%);
 }
 
@@ -45,6 +45,12 @@ body{
   max-width:var(--col); margin:0 auto; padding:13px 24px;
   display:flex; align-items:center; gap:18px;
 }
+.lang{
+  font-family:var(--mono); font-size:12px; letter-spacing:.06em;
+  background:transparent; border:1px solid var(--rule); color:var(--ink-2);
+  padding:6px 12px; border-radius:7px; cursor:pointer; transition:.18s;
+}
+.lang:hover{color:var(--acc); border-color:var(--acc-line)}
 .bar nav{margin-left:auto; display:flex; align-items:center; gap:2px}
 .bar nav a{
   font-family:var(--mono); font-size:12.5px; color:var(--ink-2); text-decoration:none;
@@ -111,6 +117,13 @@ body{
   letter-spacing:-.022em; margin:2px 0 24px; text-wrap:balance; max-width:22ch;
 }
 .thesis em{font-style:italic; color:var(--acc)}
+
+/* CJK sets wider than the ch-based limits, and should not break inside a term */
+html[lang="zh-CN"] .thesis{max-width:15em; line-break:strict; letter-spacing:0}
+html[lang="zh-CN"] .hero .lede{max-width:34em}
+html[lang="zh-CN"] .dek{max-width:32em}
+html[lang="zh-CN"] .jc-sum{line-height:1.75}
+html[lang="zh-CN"] .ref blockquote{line-height:1.6; letter-spacing:0}
 .hero .lede{color:var(--ink-2); max-width:52ch; margin:0 0 15px; font-size:16px}
 .hero .lede b{color:var(--ink); font-weight:600}
 .tie{
@@ -396,6 +409,7 @@ html.js .rv.seen{opacity:1; transform:none}
 <body>
 <div class="bar" id="bar">
   <div class="bar-in">
+    <button class="lang" id="langBtn" type="button" aria-label="Switch language">中文</button>
     <nav>
       <a href="#jobs">Live jobs</a>
       <a href="#refs">References</a>
@@ -759,6 +773,17 @@ html.js .rv.seen{opacity:1; transform:none}
       el.querySelector('blockquote').textContent='\u201C'+item.q+'\u201D';
       el.querySelector('figcaption').textContent=item.who;
     };
+    var ZH = [["在我还没投简历之前，他就把薪资和职责讲清楚了。", "研究科学家 · 人形机器人"], ["他真的读过那篇论文。不是摘要，是全文。", "研究工程师 · 机器人操作"], ["三个职位都对口。之后八个月也没有骚扰式推送。", "研究科学家 · 视觉-语言-动作模型"], ["他建议我别接其中一个。他说得对。", "资深研究工程师 · 机器人"], ["流程本身很慢，但每次都当天给反馈。", "博士转产业 · 具身智能"], ["他比我还清楚那个团队的论文脉络。", "研究科学家 · 世界模型"], ["从没给我推过操作方向以外的职位，很难得。", "资深研究工程师 · 灵巧操作"], ["直接说明我哪里不匹配，省了我两周。", "研究科学家 · 扩散策略"], ["不用我催，进展一直有同步。", "研究工程师 · 人形机器人"]];
+    POOL.forEach(function(it,i){ if(ZH[i]){ it.qz = ZH[i][0]; it.wz = ZH[i][1]; } });
+    var useZh = function(){ return window.__lang && window.__lang() === 'zh'; };
+    var origFill = fill;
+    fill = function(el, item){
+      el.__item = item;
+      var z = useZh();
+      el.querySelector('blockquote').textContent = '\u201C' + ((z && item.qz) ? item.qz : item.q) + '\u201D';
+      el.querySelector('figcaption').textContent = (z && item.wz) ? item.wz : item.who;
+    };
+    window.__refsRelang = function(){ slots.forEach(function(el){ if(el.__item) fill(el, el.__item); }); };
     slots.forEach(function(el){ fill(el, POOL[cursor++ % POOL.length]); });
     if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
       var grid=document.getElementById('refs-grid');
@@ -782,14 +807,6 @@ html.js .rv.seen{opacity:1; transform:none}
   }
 
   /* live jobs: slider + shared apply panel */
-  var JOB_LABELS=[
-    "Research Scientist / Research Engineer · Video generation (London, Zurich, Palo Alto)",
-    "Research Scientist / Research Engineer · Simulations (London, Zurich, Palo Alto)",
-    "Research Scientist / Research Engineer · Controllable / interactive video (Los Angeles)",
-    "Research Scientist / Research Engineer · Robotics (London, Zurich, San Francisco, Palo Alto)",
-    "Research Scientist / Research Engineer · Diffusion policies (Zurich, San Francisco, Palo Alto)",
-    "Research Scientist / Research Engineer · Gaming (San Francisco)"
-  ];
   var slider=document.getElementById('slider'),
       jtrack=document.getElementById('jtrack'),
       joblist=document.getElementById('joblist'),
@@ -857,7 +874,16 @@ html.js .rv.seen{opacity:1; transform:none}
     [].slice.call(document.querySelectorAll('[data-job]')).forEach(function(btn){
       btn.addEventListener('click',function(){
         var i=parseInt(btn.getAttribute('data-job'),10);
-        hint.textContent='Applying for '+(JOB_LABELS[i]||'this role');
+        var card = btn.closest('.jcard') || btn.closest('.lrow');
+        var zh = window.__lang && window.__lang() === 'zh';
+        if(card){
+          var role = (card.querySelector('.jc-role') || card.querySelector('.md-t') || {}).textContent || '';
+          var dom  = (card.querySelector('.jc-dom')  || card.querySelector('.md-s') || {}).textContent || '';
+          var locs = [].slice.call(card.querySelectorAll('.loc')).map(function(l){ return l.textContent.trim(); }).join(zh ? '、' : ', ');
+          hint.textContent = (zh ? '申请：' : 'Applying for ') + role.trim() + ' · ' + dom.trim() + (locs ? ' (' + locs + ')' : '');
+        } else {
+          hint.textContent = zh ? '申请该职位' : 'Applying for this role';
+        }
         form.reset(); check();
         sent.hidden=true; form.hidden=false; panel.hidden=false;
         var first=form.querySelector('input');
@@ -873,7 +899,9 @@ html.js .rv.seen{opacity:1; transform:none}
     form.addEventListener('submit',function(e){
       e.preventDefault();
       if(go.disabled) return;
-      sent.textContent='Prototype only. Nothing was sent and no file was uploaded. This form needs wiring to a real inbox or ATS before launch.';
+      sent.textContent = (window.__lang && window.__lang() === 'zh')
+        ? '仅为原型演示：未发送任何内容，也未上传文件。上线前需要接入真实邮箱或招聘系统。'
+        : 'Prototype only. Nothing was sent and no file was uploaded. This form needs wiring to a real inbox or ATS before launch.';
       form.hidden=true; sent.hidden=false;
     });
   }
@@ -1349,6 +1377,127 @@ html.js .rv.seen{opacity:1; transform:none}
     } else { start(); }
     document.addEventListener('visibilitychange',function(){ document.hidden ? stop() : start(); });
   })();
+  
+  /* ============ english / mandarin ============ */
+  (function(){
+    var T = {
+    "Live jobs": "在招职位",
+    "References": "候选人评价",
+    "Contact": "联系方式",
+    "Candidates’ feedback": "候选人评价",
+    "Worth a conversation?": "聊一聊？",
+    "show all": "显示全部",
+    "show slider": "切回轮播",
+    "A live, dated list of what I'm working on right now.": "我目前正在推进的职位，实时更新。",
+    "scroll to look down ↓": "向下滚动查看 ↓",
+    "World Model Head Hunter": "世界模型猎头",
+    "robotic manipulation": "机器人操作",
+    "dexterous manipulation": "灵巧操作",
+    "locomotion": "运动控制",
+    "robotics": "机器人",
+    "diffusion policies": "扩散策略",
+    "vision-language-action models": "视觉-语言-动作模型",
+    "world action models": "世界动作模型",
+    "RL / RLHF": "强化学习 / RLHF",
+    "video understanding": "视频理解",
+    "generative models": "生成模型",
+    "gaussian splatting": "高斯泼溅",
+    "datasets": "数据集",
+    "humanoids": "人形机器人",
+    "embodied systems": "具身系统",
+    "simulations": "仿真",
+    "agents": "智能体",
+    "Research Scientist / Research Engineer": "研究科学家 / 研究工程师",
+    "World models · Video generation": "世界模型 · 视频生成",
+    "World models · Simulations": "世界模型 · 仿真",
+    "World models · Controllable / interactive video": "世界模型 · 可控 / 交互式视频",
+    "World models · Robotics": "世界模型 · 机器人",
+    "World models · Diffusion policies": "世界模型 · 扩散策略",
+    "World models · Gaming": "世界模型 · 游戏",
+    "London": "伦敦",
+    "Zurich": "苏黎世",
+    "Palo Alto": "帕罗奥图",
+    "San Francisco": "旧金山",
+    "Los Angeles": "洛杉矶",
+    "Interested": "我有兴趣",
+    "Summary to follow. A few lines on the team, what the work actually involves, the stage the company is at and roughly where comp lands. Enough to judge it at a glance without opening anything.": "简介待补充。几句话说明团队、实际工作内容、公司所处阶段，以及大致的薪资区间。不用点开就能快速判断是否合适。",
+    "Name": "姓名",
+    "Email": "邮箱",
+    "Phone": "电话",
+    "Resume": "简历",
+    "(preferred)": "（建议填写）",
+    "Submit": "提交",
+    "Hide": "收起",
+    "Name, email, phone and resume required": "姓名、邮箱、电话与简历为必填项",
+    "Placeholder content": "占位内容",
+    "Sample quotes are cycling here to show the mechanic. Real ones go in the POOL array at the bottom of the file (or a CMS collection). The rotation handles any number and always shows three at a time.": "此处循环展示的是示例评价，用于说明效果。真实评价填入文件底部的 POOL 数组（或接入 CMS）。轮播支持任意数量，每次显示三条。",
+    "Top ↑": "返回顶部 ↑",
+    "Josh Garbutt · The World Model Recruiter": "Josh Garbutt · 世界模型猎头"
+  };
+    var RICH = {
+    ".role": "世界模型猎头 &nbsp;·&nbsp; <a href=\"https://www.linkedin.com/company/this-is-growth-consulting/posts/?feedView=all\" target=\"_blank\" rel=\"noopener\">This is Growth</a>",
+    ".thesis": "专注<em>世界模型</em>与具身智能的研究人才。",
+    ".hero .lede": "我服务于<b>世界模型</b>多个细分方向的研究科学家与研究工程师：",
+    "#contact .dek": "如果你正在招聘世界模型方向的人才，或者你是一位正在考虑下一步的研究者，都欢迎聊聊。以下任意方式都能找到我，很期待你的消息。"
+  };
+    var TITLES = {"en": "The World Model Recruiter", "zh": "世界模型猎头 · Josh Garbutt"};
+    var btn = document.getElementById('langBtn');
+    if(!btn) return;
+    var lang = 'en';
+  
+    var SKIP = /^(SCRIPT|STYLE|NOSCRIPT|CANVAS)$/;
+    function translatable(n){
+      var p = n.parentNode;
+      if(!p || SKIP.test(p.nodeName)) return false;
+      if(p.closest && p.closest('#notes, #nbtn')) return false;   // dev notes stay english
+      return !!n.nodeValue.trim();
+    }
+  
+    function swapText(toZh){
+      var it = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
+        acceptNode: function(n){ return translatable(n) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT; }
+      });
+      var n;
+      while((n = it.nextNode())){
+        if(n.__en === undefined) n.__en = n.nodeValue;
+        if(!toZh){ n.nodeValue = n.__en; continue; }
+        var m = n.__en.match(/^(\s*)([\s\S]*?)(\s*)$/);
+        var core = m[2].replace(/\s+/g, ' ');
+        var zh = T[core];
+        if(zh) n.nodeValue = m[1] + zh + m[3];
+      }
+    }
+  
+    function swapRich(toZh){
+      Object.keys(RICH).forEach(function(sel){
+        var el = document.querySelector(sel);
+        if(!el) return;
+        if(el.dataset.enHtml === undefined) el.dataset.enHtml = el.innerHTML;
+        el.innerHTML = toZh ? RICH[sel] : el.dataset.enHtml;
+      });
+    }
+  
+    window.__setLang = function(l){
+      lang = l;
+      var zh = (l === 'zh');
+      swapRich(zh);          // rich first: it rewrites innerHTML, wiping cached text nodes
+      swapText(zh);
+      document.documentElement.lang = zh ? 'zh-CN' : 'en';
+      document.title = zh ? TITLES.zh : TITLES.en;
+      btn.textContent = zh ? 'EN' : '中文';
+      if(window.__refsRelang) window.__refsRelang(l);
+      try{ localStorage.setItem('wmr-lang', l); }catch(e){}
+    };
+    window.__lang = function(){ return lang; };
+  
+    btn.addEventListener('click', function(){ window.__setLang(lang === 'en' ? 'zh' : 'en'); });
+  
+    var saved = null;
+    try{ saved = localStorage.getItem('wmr-lang'); }catch(e){}
+    if(!saved && /^zh/i.test(navigator.language || '')) saved = 'zh';   // chinese browsers land on chinese
+    if(saved === 'zh') window.__setLang('zh');
+  })();
+  
   
   /* build notes */
   var nb=document.getElementById('nbtn'), np=document.getElementById('notes');
