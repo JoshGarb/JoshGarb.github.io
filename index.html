@@ -600,7 +600,8 @@ html.js .rv.seen{opacity:1; transform:none}
     <div class="apply" id="applyPanel" hidden>
       <form novalidate action="https://formsubmit.co/josh@thisisgrowth.io" method="POST" enctype="multipart/form-data">
         <input type="hidden" name="_subject" id="ap-subject" value="Application via joshgarb.github.io">
-        <input type="hidden" name="role" id="ap-role" value="">
+        <input type="hidden" name="Role" id="ap-role" value="">
+        <input type="hidden" name="_replyto" id="ap-replyto" value="">
         <input type="hidden" name="_template" value="table">
         <input type="hidden" name="_captcha" value="false">
         <input type="hidden" name="_next" id="ap-next" value="">
@@ -609,27 +610,31 @@ html.js .rv.seen{opacity:1; transform:none}
         <div class="fgrid">
           <div class="fld">
             <label for="ap-name">Name <span class="req">*</span></label>
-            <input id="ap-name" name="name" type="text" autocomplete="name" data-req>
+            <input id="ap-name" name="Name" type="text" autocomplete="name" data-req>
           </div>
           <div class="fld">
             <label for="ap-email">Email <span class="req">*</span></label>
-            <input id="ap-email" name="email" type="email" autocomplete="email" data-req>
+            <input id="ap-email" name="Email" type="email" autocomplete="email" data-req>
           </div>
           <div class="fld">
             <label for="ap-phone">Phone <span class="req">*</span></label>
-            <input id="ap-phone" name="phone" type="tel" autocomplete="tel" data-req>
+            <input id="ap-phone" name="Phone" type="tel" autocomplete="tel" data-req>
+          </div>
+          <div class="fld">
+            <label for="ap-company">Company or institution</label>
+            <input id="ap-company" name="Company" type="text" autocomplete="organization">
           </div>
           <div class="fld">
             <label for="ap-li">LinkedIn <span class="opt">(preferred)</span></label>
-            <input id="ap-li" name="linkedin" type="url" placeholder="linkedin.com/in/&hellip;">
+            <input id="ap-li" name="LinkedIn" type="url" placeholder="linkedin.com/in/&hellip;">
           </div>
           <div class="fld fld-zh">
             <label for="ap-wechat">WeChat ID <span class="opt">(preferred)</span></label>
-            <input id="ap-wechat" name="wechat" type="text" autocomplete="off" placeholder="微信号">
+            <input id="ap-wechat" name="WeChat" type="text" autocomplete="off" placeholder="微信号">
           </div>
           <div class="fld fld-wide">
             <label for="ap-cv">Resume <span class="req">*</span></label>
-            <input id="ap-cv" name="resume" type="file" accept=".pdf,.doc,.docx" data-req>
+            <input id="ap-cv" name="Resume" type="file" accept=".pdf,.doc,.docx" data-req>
           </div>
         </div>
         <div class="arow">
@@ -911,6 +916,9 @@ html.js .rv.seen{opacity:1; transform:none}
       if(rf) rf.value = which;
       if(sf) sf.value = 'Application: ' + (which || 'joshgarb.github.io');
       // come back to this page with a confirmation instead of formsubmit's own screen
+      var rt = document.getElementById('ap-replyto');
+      var em = form.querySelector('#ap-email');
+      if(rt && em) rt.value = em.value.trim();
       if(nf) nf.value = location.origin + location.pathname + '?sent=1' + (zh ? '&lang=zh' : '');
       go.disabled = true;
       go.textContent = zh ? '正在提交…' : 'Sending…';
@@ -1486,7 +1494,8 @@ html.js .rv.seen{opacity:1; transform:none}
     "World models · RL / RLHF": "世界模型 · 强化学习 / RLHF",
     "Reward modelling and post-training across video, robotics and world models: RLHF, preference data, and RL on top of large pretrained models. Wants people who have run a full post-training loop in anger, not only PPO on a benchmark.": "横跨视频、机器人与世界模型的奖励建模与后训练：RLHF、偏好数据，以及在大规模预训练模型之上做强化学习。希望候选人真正跑通过完整的后训练流程，而不只是在基准上跑过 PPO。",
     "WeChat ID": "微信号",
-    "Trouble submitting? Message me on WhatsApp or email instead.": "提交遇到问题？也可以直接通过 WhatsApp 或邮箱联系我。"
+    "Trouble submitting? Message me on WhatsApp or email instead.": "提交遇到问题？也可以直接通过 WhatsApp 或邮箱联系我。",
+    "Company or institution": "公司 / 机构"
   };
     var RICH = {
     ".role": "世界模型猎头 &nbsp;·&nbsp; <a href=\"https://www.linkedin.com/company/this-is-growth-consulting/posts/?feedView=all\" target=\"_blank\" rel=\"noopener\">This is Growth</a>",
