@@ -717,12 +717,6 @@ html.js .rv.seen{opacity:1; transform:none}
   <section id="refs" class="rv">
     <p class="eyebrow">References</p>
     <h2>Candidates&rsquo; feedback</h2>
-    <div class="holder">
-      <b>Placeholder content</b>
-      Sample quotes are cycling here to show the mechanic. Real ones go in the <code>POOL</code>
-      array at the bottom of the file (or a CMS collection). The rotation handles any number
-      and always shows three at a time.
-    </div>
     <div class="refs" id="refs-grid">
       <figure class="ref"><blockquote></blockquote><figcaption></figcaption></figure>
       <figure class="ref"><blockquote></blockquote><figcaption></figcaption></figure>
@@ -784,15 +778,15 @@ html.js .rv.seen{opacity:1; transform:none}
 
   /* rotating candidate references */
   var POOL=[
-    {q:"Straight answer on comp and scope before I had even sent a CV.", who:"Research Scientist \u00b7 humanoids"},
-    {q:"He had actually read the paper. Not the abstract, the paper.", who:"Research Engineer \u00b7 manipulation"},
-    {q:"Three roles, all relevant. No spam for eight months afterwards.", who:"Research Scientist \u00b7 VLA models"},
-    {q:"Told me not to take one of them. He was right.", who:"Senior Research Engineer \u00b7 robotics"},
-    {q:"Same-day feedback every time, through a slow process.", who:"PhD to industry \u00b7 embodied AI"},
-    {q:"Knew the team's publication history better than I did.", who:"Research Scientist \u00b7 world models"},
-    {q:"Never pitched me anything outside manipulation. Refreshing.", who:"Staff Research Engineer \u00b7 dexterous"},
-    {q:"Honest about where I was not a fit. Saved me two weeks.", who:"Research Scientist \u00b7 diffusion policies"},
-    {q:"Kept me updated without me ever having to chase.", who:"Research Engineer \u00b7 humanoids"}
+    {q:"Helped throughout the whole process and was great to work with. Would use again.", who:"Haoji · Data Platform Lead · San Francisco"},
+    {q:"Very helpful, always gave me the information I needed and made the decision making as easy as possible.", who:"Kaiwen · Research Engineer · Zurich"},
+    {q:"Kept in contact for a while and always checked up until I was ready to start something new.", who:"Sachin · Research Scientist · San Francisco"},
+    {q:"Worked with me to get me the best compensation.", who:"Suhan · Research Scientist · Zurich"},
+    {q:"One of the best recruiters I have ever worked with. Very grateful for his work.", who:"Lei · Research Engineer · San Francisco"},
+    {q:"Helped me find my dream job.", who:"Chuyang · Research Engineer · San Francisco"},
+    {q:"Was very helpful, always made sure I had the info and worked with me to get me the best package.", who:"Michal · Research Scientist · Zurich"},
+    {q:"Would use again, great to work with.", who:"Aram · Research Scientist · Zurich"},
+    {q:"Very helpful and introduced me to some amazing companies which helped me find my next job. Thank you.", who:"Bin · Research Scientist · Los Angeles"}
   ];
   var slots=[].slice.call(document.querySelectorAll('.ref'));
   if(slots.length){
@@ -801,7 +795,7 @@ html.js .rv.seen{opacity:1; transform:none}
       el.querySelector('blockquote').textContent='\u201C'+item.q+'\u201D';
       el.querySelector('figcaption').textContent=item.who;
     };
-    var ZH = [["在我还没投简历之前，他就把薪资和职责讲清楚了。", "研究科学家 · 人形机器人"], ["他真的读过那篇论文。不是摘要，是全文。", "研究工程师 · 机器人操作"], ["三个职位都对口。之后八个月也没有骚扰式推送。", "研究科学家 · 视觉-语言-动作模型"], ["他建议我别接其中一个。他说得对。", "资深研究工程师 · 机器人"], ["流程本身很慢，但每次都当天给反馈。", "博士转产业 · 具身智能"], ["他比我还清楚那个团队的论文脉络。", "研究科学家 · 世界模型"], ["从没给我推过操作方向以外的职位，很难得。", "资深研究工程师 · 灵巧操作"], ["直接说明我哪里不匹配，省了我两周。", "研究科学家 · 扩散策略"], ["不用我催，进展一直有同步。", "研究工程师 · 人形机器人"]];
+    var ZH = [["全程都在帮忙，合作非常愉快。以后还会再找他。", "Haoji · 数据平台负责人 · 旧金山"], ["非常给力，总能提供我需要的信息，让决策变得尽可能轻松。", "Kaiwen · 研究工程师 · 苏黎世"], ["保持联系了很长一段时间，一直关注我的情况，直到我准备好开始新的机会。", "Sachin · 研究科学家 · 旧金山"], ["和我一起争取到了最好的薪酬。", "Suhan · 研究科学家 · 苏黎世"], ["是我合作过最好的招聘顾问之一。非常感谢他的付出。", "Lei · 研究工程师 · 旧金山"], ["帮我找到了梦想中的工作。", "Chuyang · 研究工程师 · 旧金山"], ["非常给力，总是确保我掌握所需的信息，并帮我争取到最好的待遇。", "Michal · 研究科学家 · 苏黎世"], ["合作很愉快，以后还会再找他。", "Aram · 研究科学家 · 苏黎世"], ["非常给力，介绍了几家很棒的公司，帮我找到了下一份工作。谢谢。", "Bin · 研究科学家 · 洛杉矶"]];
     POOL.forEach(function(it,i){ if(ZH[i]){ it.qz = ZH[i][0]; it.wz = ZH[i][1]; } });
     var useZh = function(){ return window.__lang && window.__lang() === 'zh'; };
     var origFill = fill;
@@ -1530,8 +1524,6 @@ html.js .rv.seen{opacity:1; transform:none}
     "(preferred)": "（建议填写）",
     "Submit": "提交",
     "Hide": "收起",
-    "Placeholder content": "占位内容",
-    "Sample quotes are cycling here to show the mechanic. Real ones go in the POOL array at the bottom of the file (or a CMS collection). The rotation handles any number and always shows three at a time.": "此处循环展示的是示例评价，用于说明效果。真实评价填入文件底部的 POOL 数组（或接入 CMS）。轮播支持任意数量，每次显示三条。",
     "Top ↑": "返回顶部 ↑",
     "Josh Garbutt · The World Model Recruiter": "Josh Garbutt · 世界模型猎头",
     "Infrastructure Engineer": "基础设施工程师",
