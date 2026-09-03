@@ -625,8 +625,8 @@ html.js .rv.seen{opacity:1; transform:none}
             <input id="ap-company" name="Company" type="text" autocomplete="organization">
           </div>
           <div class="fld">
-            <label for="ap-li">LinkedIn <span class="opt">(preferred)</span></label>
-            <input id="ap-li" name="LinkedIn" type="url" placeholder="linkedin.com/in/&hellip;">
+            <label for="ap-li">Profile link <span class="opt">(LinkedIn, Scholar, GitHub, site)</span></label>
+            <input id="ap-li" name="Profile" type="text" inputmode="url" placeholder="scholar.google.com/&hellip;">
           </div>
           <div class="fld fld-zh">
             <label for="ap-wechat">WeChat ID <span class="opt">(preferred)</span></label>
@@ -640,7 +640,7 @@ html.js .rv.seen{opacity:1; transform:none}
         <div class="arow">
           <button class="btn btn-go" type="submit" disabled>Submit</button>
           <button class="btn btn-hide" type="button">Hide</button>
-          <span class="need">Name, email and phone required</span>
+          <span class="need">Name, email, phone, and either a link or a CV</span>
         </div>
         <p class="fallback">Trouble submitting? Message me on <a href="https://wa.me/447301620466" target="_blank" rel="noopener">WhatsApp</a> or <a href="mailto:josh@thisisgrowth.io">email</a> instead.</p>
         <div style="display:none">
@@ -875,8 +875,16 @@ html.js .rv.seen{opacity:1; transform:none}
       if(f.type==='email') return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.value.trim());
       return f.value.trim().length>0;
     };
-    var check=function(){ go.disabled = !need.every(ok); };
-    need.forEach(function(f){
+    var profEl = form.querySelector('#ap-li');
+    var cvEl   = form.querySelector('#ap-cv');
+    // one of the two must be there, otherwise Josh has no way to tell who this is
+    var identified = function(){
+      return (profEl && profEl.value.trim().length > 2) ||
+             (cvEl && cvEl.files && cvEl.files.length > 0);
+    };
+    var check=function(){ go.disabled = !(need.every(ok) && identified()); };
+    need.concat([profEl, cvEl]).forEach(function(f){
+      if(!f) return;
       f.addEventListener('input',check);
       f.addEventListener('change',check);
     });
@@ -1495,8 +1503,10 @@ html.js .rv.seen{opacity:1; transform:none}
     "WeChat ID": "微信号",
     "Trouble submitting? Message me on WhatsApp or email instead.": "提交遇到问题？也可以直接通过 WhatsApp 或邮箱联系我。",
     "Company or institution": "公司 / 机构",
-    "Name, email and phone required": "姓名、邮箱与电话为必填项",
-    "(optional)": "（选填）"
+    "(optional)": "（选填）",
+    "Name, email, phone, and either a link or a CV": "姓名、邮箱、电话，以及个人链接或简历（二者其一）",
+    "Profile link": "个人链接",
+    "(LinkedIn, Scholar, GitHub, site)": "（LinkedIn、谷歌学术、GitHub、个人主页）"
   };
     var RICH = {
     ".role": "世界模型猎头 &nbsp;·&nbsp; <a href=\"https://www.linkedin.com/company/this-is-growth-consulting/posts/?feedView=all\" target=\"_blank\" rel=\"noopener\">This is Growth</a>",
