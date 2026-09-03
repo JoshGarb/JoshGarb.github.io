@@ -26,6 +26,16 @@
 }
 
 *{box-sizing:border-box}
+/* light version: opt in with data-theme="light" on the root */
+:root[data-theme="light"]{
+  --paper:#f8f7f4; --raise:#ffffff; --sunk:#efeee9;
+  --ink:#1a1815; --ink-2:#5c574e; --ink-3:#8d877b;
+  --rule:#e3e0d8;
+  --acc:#1c6b45; --acc-ink:#ffffff; --acc-wash:rgba(28,107,69,.08); --acc-line:rgba(28,107,69,.30);
+  --pred:#9a5f14; --pred-line:rgba(176,124,40,.55); --pred-wash:rgba(196,146,54,.14);
+  --shadow:0 1px 2px rgba(26,24,21,.05), 0 8px 24px -14px rgba(26,24,21,.16);
+}
+
 html{scroll-behavior:smooth; -webkit-text-size-adjust:100%; color-scheme:dark}
 body{
   margin:0; background:var(--paper); color:var(--ink);
@@ -60,6 +70,13 @@ body{
   padding:6px 10px; border-radius:6px; transition:color .18s, background .18s;
 }
 .bar nav a:hover{color:var(--ink); background:var(--sunk)}
+.theme{
+  margin-left:8px; width:44px; height:45px; flex:none;
+  display:grid; place-items:center; padding:0;
+  border:1px solid var(--acc-line); background:var(--raise); color:var(--ink);
+  border-radius:9px; cursor:pointer; font-size:16px; line-height:1; transition:.18s;
+}
+.theme:hover{color:var(--acc-ink); background:var(--acc); border-color:var(--acc)}
 
 /* ---------- hero ---------- */
 .hero{padding:34px 0 260px}
@@ -410,6 +427,7 @@ html.js .rv.seen{opacity:1; transform:none}
       <a href="#jobs">Live jobs</a>
       <a href="#refs">References</a>
       <a class="stay" href="#contact">Contact</a>
+      <button class="theme" id="themeBtn" type="button" aria-label="Switch to light">&#9728;</button>
     </nav>
   </div>
 </div>
@@ -1013,9 +1031,20 @@ html.js .rv.seen{opacity:1; transform:none}
       grass:['#63b87b','#47905c','#356b45'],
       clump:[['#6ec085','#4d9765','#38714a'],['#5fb478','#428c59','#316841'],['#79c98f','#56a06d','#3d7850']],
       slab:['#d7d4ca','#b4b1a7','#96938b'],
-      mod:['#16140f','#100f0b','#0b0a07']
+      mod:['#16140f','#100f0b','#0b0a07'],
+      wing:['#e8b04b','#7fc7ff','#f2f0ea']        // orange, blue, white
     };
-    function pal(){ return PAL; }
+    var PAL_LIGHT={
+      leaf:['#ffd3e2','#f9a9c7','#e2839f'],       // blossom
+      bark:['#ab8c69','#8c7154','#6e5840'],
+      grass:['#8ed49f','#6bb47f','#4f8f62'],
+      clump:[['#93d8a4','#70b884','#539366'],['#87cf99','#66ae7b','#4c8a5f'],['#9cdfac','#78c08c','#5a9b6d']],
+      slab:['#ffffff','#eae7de','#d2cfc6'],
+      mod:['#131108','#0d0b06','#080704'],
+      wing:['#d9922b','#2f86c4','#8f8a7e']        // white would vanish on a light ground
+    };
+    function isLight(){ return document.documentElement.getAttribute('data-theme')==='light'; }
+    function pal(){ return isLight() ? PAL_LIGHT : PAL; }
   
     /* ---------- build the static voxel set ---------- */
     var vox=[];   // {x,y,z,k}  k: 'mod' | 'bark' | 'leaf' | 'grass'
@@ -1088,7 +1117,6 @@ html.js .rv.seen{opacity:1; transform:none}
     var treeTop=0; vox.forEach(function(v){ if(v.y>treeTop) treeTop=v.y; });
   
     /* ---------- butterflies ---------- */
-    var BWING=['#e8b04b','#7fc7ff','#f2f0ea'];   // orange, blue, white
     var flutter=[];
     for(var bi=0; bi<7; bi++){
       var bp=pads[Math.floor(rnd()*pads.length)];
@@ -1179,12 +1207,15 @@ html.js .rv.seen{opacity:1; transform:none}
       var h=fr.length, wd=fr[0].length;
       var x0=pt[0]-wd*ps/2, y0=pt[1]-h*ps/2;
       var step=Math.ceil(ps);
+      var wings=pal().wing;
+      var wingCol=wings[B.ci % wings.length];
+      var bodyCol=mix(wingCol,'#000000',0.58);
       ctx.globalAlpha=alpha;
       for(var r=0;r<h;r++){
         for(var c=0;c<wd;c++){
           var ch=fr[r].charAt(c);
           if(ch==='.') continue;
-          ctx.fillStyle = (ch==='b') ? B.body : B.wing;
+          ctx.fillStyle = (ch==='b') ? bodyCol : wingCol;
           ctx.fillRect(Math.round(x0+c*ps), Math.round(y0+r*ps), step, step);
         }
       }
@@ -1386,11 +1417,6 @@ html.js .rv.seen{opacity:1; transform:none}
       if(!still.matches){
         for(var bi2=0; bi2<flutter.length; bi2++){
           var B=flutter[bi2];
-          if(!B.wing){
-            var c0=BWING[B.ci%BWING.length];
-            B.wing=c0;
-            B.body=mix(c0,'#000000',0.58);
-          }
           B.a+=B.sp; B.bob+=B.bsp; B.ph+=B.fsp;
           B.x=B.ox+Math.cos(B.a)*B.r;
           B.z=B.oz+Math.sin(B.a)*B.r*0.8;
@@ -1435,6 +1461,28 @@ html.js .rv.seen{opacity:1; transform:none}
     document.addEventListener('visibilitychange',function(){ document.hidden ? stop() : start(); });
   })();
   
+  /* ============ dark / light ============ */
+  (function(){
+    var root=document.documentElement, btn=document.getElementById('themeBtn');
+    if(!btn) return;
+    var meta=document.querySelector('meta[name="theme-color"]');
+    function apply(light){
+      if(light) root.setAttribute('data-theme','light');
+      else root.removeAttribute('data-theme');
+      root.style.colorScheme = light ? 'light' : 'dark';
+      if(meta) meta.setAttribute('content', light ? '#f8f7f4' : '#12110e');
+      btn.innerHTML = light ? '&#9790;' : '&#9728;';       // moon when light, sun when dark
+      btn.setAttribute('aria-label', light ? 'Switch to dark' : 'Switch to light');
+      try{ localStorage.setItem('wmr-theme', light ? 'light' : 'dark'); }catch(e){}
+    }
+    btn.addEventListener('click', function(){
+      apply(root.getAttribute('data-theme') !== 'light');
+    });
+    var saved=null;
+    try{ saved=localStorage.getItem('wmr-theme'); }catch(e){}
+    apply(saved === 'light');    // dark stays the default
+  })();
+
   /* ============ english / mandarin ============ */
   (function(){
     var T = {
