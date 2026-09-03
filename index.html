@@ -286,6 +286,8 @@ h2{
 .fgrid{display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:12px}
 .fld{display:flex; flex-direction:column; gap:5px; min-width:0}
 .fld-wide{grid-column:1 / -1}
+.fld-zh{display:none}                                   /* chinese version only */
+html[lang="zh-CN"] .fld-zh{display:flex}
 .fld label{
   font-family:var(--mono); font-size:10.5px; letter-spacing:.09em; text-transform:uppercase;
   color:var(--ink-3);
@@ -608,6 +610,10 @@ html.js .rv.seen{opacity:1; transform:none}
           <div class="fld">
             <label for="ap-li">LinkedIn <span class="opt">(preferred)</span></label>
             <input id="ap-li" name="linkedin" type="url" placeholder="linkedin.com/in/&hellip;">
+          </div>
+          <div class="fld fld-zh">
+            <label for="ap-wechat">WeChat ID <span class="opt">(preferred)</span></label>
+            <input id="ap-wechat" name="wechat" type="text" autocomplete="off" placeholder="微信号">
           </div>
           <div class="fld fld-wide">
             <label for="ap-cv">Resume <span class="req">*</span></label>
@@ -1444,7 +1450,8 @@ html.js .rv.seen{opacity:1; transform:none}
     "Infrastructure · Large-scale GPU training": "基础设施 · 大规模 GPU 训练",
     "The training stack behind large video and world models: multi-thousand-GPU clusters, throughput, checkpointing and failure recovery. Wants engineers who have run distributed training at that scale in production and can say where the bottleneck actually was.": "支撑大规模视频与世界模型训练的底层系统：数千卡集群、吞吐、检查点与故障恢复。希望候选人在生产环境中跑过这种规模的分布式训练，并能说清瓶颈到底在哪里。",
     "World models · RL / RLHF": "世界模型 · 强化学习 / RLHF",
-    "Reward modelling and post-training across video, robotics and world models: RLHF, preference data, and RL on top of large pretrained models. Wants people who have run a full post-training loop in anger, not only PPO on a benchmark.": "横跨视频、机器人与世界模型的奖励建模与后训练：RLHF、偏好数据，以及在大规模预训练模型之上做强化学习。希望候选人真正跑通过完整的后训练流程，而不只是在基准上跑过 PPO。"
+    "Reward modelling and post-training across video, robotics and world models: RLHF, preference data, and RL on top of large pretrained models. Wants people who have run a full post-training loop in anger, not only PPO on a benchmark.": "横跨视频、机器人与世界模型的奖励建模与后训练：RLHF、偏好数据，以及在大规模预训练模型之上做强化学习。希望候选人真正跑通过完整的后训练流程，而不只是在基准上跑过 PPO。",
+    "WeChat ID": "微信号"
   };
     var RICH = {
     ".role": "世界模型猎头 &nbsp;·&nbsp; <a href=\"https://www.linkedin.com/company/this-is-growth-consulting/posts/?feedView=all\" target=\"_blank\" rel=\"noopener\">This is Growth</a>",
