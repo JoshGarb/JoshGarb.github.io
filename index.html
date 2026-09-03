@@ -310,6 +310,12 @@ html[lang="zh-CN"] .fld-zh{display:flex}
 .btn-hide{background:transparent; color:var(--ink-2); border-color:var(--rule)}
 .btn-hide:hover{color:var(--ink); border-color:var(--ink-3)}
 .need{font-family:var(--mono); font-size:11px; color:var(--ink-3)}
+.fallback{
+  font-family:var(--mono); font-size:11px; line-height:1.6;
+  color:var(--ink-3); margin:12px 0 0;
+}
+.fallback a{color:var(--ink-2)}
+.fallback a:hover{color:var(--acc)}
 .btn-go:not(:disabled) ~ .need{visibility:hidden}
 .sent{
   font-family:var(--mono); font-size:12.5px; line-height:1.55; color:var(--pred);
@@ -592,7 +598,13 @@ html.js .rv.seen{opacity:1; transform:none}
     </div>
 
     <div class="apply" id="applyPanel" hidden>
-      <form novalidate>
+      <form novalidate action="https://formsubmit.co/josh@thisisgrowth.io" method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="_subject" id="ap-subject" value="Application via joshgarb.github.io">
+        <input type="hidden" name="role" id="ap-role" value="">
+        <input type="hidden" name="_template" value="table">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="_next" id="ap-next" value="">
+        <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off" aria-hidden="true">
         <p class="hint"></p>
         <div class="fgrid">
           <div class="fld">
@@ -624,6 +636,9 @@ html.js .rv.seen{opacity:1; transform:none}
           <button class="btn btn-go" type="submit" disabled>Submit</button>
           <button class="btn btn-hide" type="button">Hide</button>
           <span class="need">Name, email, phone and resume required</span>
+        </div>
+        <p class="fallback">Trouble submitting? Message me on <a href="https://wa.me/447301620466" target="_blank" rel="noopener">WhatsApp</a> or <a href="mailto:josh@thisisgrowth.io">email</a> instead.</p>
+        <div style="display:none">
         </div>
       </form>
       <p class="sent" hidden></p>
@@ -887,13 +902,32 @@ html.js .rv.seen{opacity:1; transform:none}
     });
 
     form.addEventListener('submit',function(e){
-      e.preventDefault();
-      if(go.disabled) return;
-      sent.textContent = (window.__lang && window.__lang() === 'zh')
-        ? '仅为原型演示：未发送任何内容，也未上传文件。上线前需要接入真实邮箱或招聘系统。'
-        : 'Prototype only. Nothing was sent and no file was uploaded. This form needs wiring to a real inbox or ATS before launch.';
-      form.hidden=true; sent.hidden=false;
+      if(go.disabled){ e.preventDefault(); return; }
+      var zh = window.__lang && window.__lang() === 'zh';
+      var which = (hint.textContent || '').replace(/^(Applying for|申请：)\s*/, '').trim();
+      var rf = document.getElementById('ap-role');
+      var sf = document.getElementById('ap-subject');
+      var nf = document.getElementById('ap-next');
+      if(rf) rf.value = which;
+      if(sf) sf.value = 'Application: ' + (which || 'joshgarb.github.io');
+      // come back to this page with a confirmation instead of formsubmit's own screen
+      if(nf) nf.value = location.origin + location.pathname + '?sent=1' + (zh ? '&lang=zh' : '');
+      go.disabled = true;
+      go.textContent = zh ? '正在提交…' : 'Sending…';
+      // no preventDefault: the browser posts the form, attachment included
     });
+
+    // returning from a successful post
+    if(/[?&]sent=1/.test(location.search)){
+      var zhBack = /[?&]lang=zh/.test(location.search);
+      sent.textContent = zhBack
+        ? '已收到，谢谢。我会尽快亲自回复你。'
+        : 'Got it, thank you. I read every one of these and will reply personally.';
+      form.hidden = true; sent.hidden = false;
+      panel.hidden = false;
+      if(zhBack && window.__setLang) window.__setLang('zh');
+      requestAnimationFrame(function(){ panel.scrollIntoView({block:'center'}); });
+    }
   }
 
 
@@ -1451,7 +1485,8 @@ html.js .rv.seen{opacity:1; transform:none}
     "The training stack behind large video and world models: multi-thousand-GPU clusters, throughput, checkpointing and failure recovery. Wants engineers who have run distributed training at that scale in production and can say where the bottleneck actually was.": "支撑大规模视频与世界模型训练的底层系统：数千卡集群、吞吐、检查点与故障恢复。希望候选人在生产环境中跑过这种规模的分布式训练，并能说清瓶颈到底在哪里。",
     "World models · RL / RLHF": "世界模型 · 强化学习 / RLHF",
     "Reward modelling and post-training across video, robotics and world models: RLHF, preference data, and RL on top of large pretrained models. Wants people who have run a full post-training loop in anger, not only PPO on a benchmark.": "横跨视频、机器人与世界模型的奖励建模与后训练：RLHF、偏好数据，以及在大规模预训练模型之上做强化学习。希望候选人真正跑通过完整的后训练流程，而不只是在基准上跑过 PPO。",
-    "WeChat ID": "微信号"
+    "WeChat ID": "微信号",
+    "Trouble submitting? Message me on WhatsApp or email instead.": "提交遇到问题？也可以直接通过 WhatsApp 或邮箱联系我。"
   };
     var RICH = {
     ".role": "世界模型猎头 &nbsp;·&nbsp; <a href=\"https://www.linkedin.com/company/this-is-growth-consulting/posts/?feedView=all\" target=\"_blank\" rel=\"noopener\">This is Growth</a>",
